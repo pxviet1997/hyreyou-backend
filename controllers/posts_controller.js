@@ -15,7 +15,7 @@ export const getPosts =async (req,res) => {
 export const createTalents = async (req,res) => {
     const createtalent = req.body;
 
-    const newTalent =new PostTalents(cratetalent);
+    const newTalent =new PostTalents(createtalent);
    try {
        await newTalent.save();
        res.status(201).json(newTalent);
