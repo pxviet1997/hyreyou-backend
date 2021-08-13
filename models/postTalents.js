@@ -7,6 +7,8 @@ const postSchema =mongoose.Schema({
     lastName:String,
     email:String,
     password:String,
+    dateOfBirth:Date,
+    profilePhoto:String,
     mobileNumber:Number,
     address:{
         streetName : String,         
