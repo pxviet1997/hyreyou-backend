@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const postSchema =mongoose.Schema({
+const talentSchema = mongoose.Schema({
     userType:String,
     title:String,
     firstName:String,
@@ -39,6 +39,6 @@ const postSchema =mongoose.Schema({
     },
 });
 
-const PostTalents = mongoose.model('PostTalents',postSchema);
+const Talent = mongoose.model('Talent',talentSchema);
 
-export default PostTalents;
+export default Talent;

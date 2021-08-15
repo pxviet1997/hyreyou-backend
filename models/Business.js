@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const postSchema =mongoose.Schema({
+const businessSchema =mongoose.Schema({
     userType:String,
     businessName:String,
     businessABN:String,
@@ -26,6 +26,6 @@ const postSchema =mongoose.Schema({
     },
 });
 
-const PostBusiness = mongoose.model('PostBusiness',postSchema);
+const Business = mongoose.model('Business',businessSchema);
 
-export default PostBusiness;
+export default Business;

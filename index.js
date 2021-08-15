@@ -2,12 +2,13 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import postRoutes from './routes/posts.js';
-
+import talentRoutes from './routes/TalentRoutes';
+import businessRoutes from './routes/BusinessRoutes/index_Business.js';
 
 const app = express();
 
-app.use('/posts', postRoutes);
+app.use('/talent', talentRoutes);
+app.use('/business', businessRoutes);
 
 app.use(bodyParser.json({size: "30mb" , extended : true}));
 app.use(bodyParser.urlencoded({size: "30mb", extended : true}));
