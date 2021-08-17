@@ -1,15 +1,27 @@
 import mongoose from 'mongoose';
+import bcrypt from 'bcrypt';
+
 
 const talentSchema = mongoose.Schema({
     userType:String,
     title:String,
     firstName:String,
     lastName:String,
-    email:String,
-    password:String,
+    email:{
+        type:String,
+        unique:true,
+        required:true,
+    },
+    password:{
+        type:String,
+        required:true,
+    },
     dateOfBirth:Date,
     profilePhoto:String,
-    mobileNumber:Number,
+    mobileNumber:{
+        type:Number,
+        required:true,
+    },
     address:{
         streetName : String,         
         city: String,
@@ -42,3 +54,42 @@ const talentSchema = mongoose.Schema({
 const Talent = mongoose.model('Talent',talentSchema);
 
 export default Talent;
+
+
+// {
+//     "_id": "10006546",
+//     "userType":"Talent"
+//     "title":"Mr",    
+//     "firstName": "Ravi",
+//     "lastName":"Aswanth",
+//     "email":"ravi@gmail.com",
+//     "password":"abc123",
+//     "dateOfBirth":"13121996",
+//     "profilePhoto":"uploaded",
+//     "mobileNumber":"729945788",
+//     "address":{
+//             "streetName" :"portsmouth",         
+//             "city": "Epping",
+//             "state":"Melbourne",
+//             "country": "Australia",
+//             "postalCode" : "3075",
+//         },
+//     "jobHistory":[{
+//             "companyName":"Wipro",
+//             "jobPosition" :"softwareDeveloper",
+//             "jobDescription":"developer",
+//             "yearOfExperience":"2years"
+//         }],    
+//         "skills": ["java", "react", "node"],
+//         "education":[{
+//             "nameOfUniversity":"latrobe",
+//             "nameOfDegree":"Masters",
+//             "degreeDuration":"2years"
+//         }],
+//         "culturalPreferences":["any"],
+//         "availability":["Monday","tuesday"],
+//         "gender":"Male",
+//         "nationality":"Indian",
+//         "createdAt": "2016-01-03T05:00:00.000Z",
+            
+//     }

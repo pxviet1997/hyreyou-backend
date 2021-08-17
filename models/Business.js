@@ -1,17 +1,34 @@
 import mongoose from 'mongoose';
+import bcrypt from 'bcrypt';
 
 const businessSchema =mongoose.Schema({
     userType:String,
     businessName:String,
-    businessABN:String,
+    businessABN:{
+        type:String,
+        unique:true,
+        required:true,
+    },
     jobDescription:String,
     jobPositiion:String,
     jobLocation:String,
     experienceRequired:String,
-    email:String,
-    password:String,
+    email:{
+        type:String,
+        unique:true,
+        required:true,
+    },
+    password:{
+        type:String,
+        required:true,
+    },
     logo:String,
-    contactNumber:Number,
+    contactNumber:{
+        type:Number,
+        unique:true,
+        required:true,
+    },
+    culturalInformation:String,
     address:{
         streetName : String,         
         city: String,
