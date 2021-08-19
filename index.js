@@ -2,17 +2,21 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import bodyParser from 'body-parser';
+import userRoutes from './routes/StartRoutes/start_index.js';
 import talentRoutes from './routes/TalentRoutes/talent_index.js';
 import businessRoutes from './routes/BusinessRoutes/business_index.js';
 
 const app = express();
 
-app.use('/talent', talentRoutes);
-//app.use('/business', businessRoutes);
 
-app.use(bodyParser.json({size: "30mb" , extended : true}));
-app.use(bodyParser.urlencoded({size: "30mb", extended : true}));
+
+//app.use(bodyParser.json({size: "30mb" , extended : true}));
+//app.use(bodyParser.urlencoded({size: "30mb", extended : true}));
 app.use(cors());
+app.use(express.json());
+app.use("/auth", userRoutes);
+app.use('/talent', talentRoutes);
+app.use('/business', businessRoutes);
 
 const CONNECTION_URL = "mongodb+srv://HyreYou:HyreYou@cluster0.qm47w.mongodb.net/HyreYou?retryWrites=true&w=majority";
 const PORT = process.env.PORT || 5000;

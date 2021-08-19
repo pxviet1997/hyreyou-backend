@@ -3,8 +3,8 @@ import Talent from "../../models/Talent.js";
 
 export const getTalent =async (req,res) => {
     try {
-        var id= "611744672319f01bd7c11769";
-       const talent = await Talent.findById(id); 
+       
+       const talent = await Talent.findById(); 
        console.log(talent);
        res.status(200).json(talent);
     } catch (error) {
@@ -19,13 +19,8 @@ export const createTalent = async (req,res) => {
     const newTalent =new Talent(body);
    try {
        await newTalent.save();
-      // res.status(201).json(newTalent);
-      res.json(
-        new successModal({
-            data:newTalent,
-            msg:"new Talent is Added successfully",
-        })
-        );
+       res.status(201).json(newTalent);
+      
    } catch (error) {
        res.status(409).json({message:error.message});
    }
@@ -34,9 +29,9 @@ export const createTalent = async (req,res) => {
 
 export const updateTalent = async (req,res) => {
     try {
-        const {_id} = req.params;
+        const {_id} = req.query;
         const body = req.body;
-        console.log(req.params);
+        console.log(_id);
         console.log( req.body);
         const talent = await Talent.findOneAndUpdate(_id,body,{new:true}); 
 
