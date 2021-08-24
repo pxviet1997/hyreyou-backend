@@ -1,10 +1,10 @@
 import express from 'express';
 
-import { createBusiness,getBusiness,updateBusiness } from "./business_controller.js";
+import { createBusiness, getBusiness, updateBusiness } from "./business_controller.js";
 
-const router =express.Router();
+const router = express.Router();
 
-router.post('/createBusiness',createBusiness);
-router.get('/',getBusiness);
-router.post('/updateBusiness',updateBusiness);
+router.post('/createBusiness', createBusiness);
+router.get('/', getBusiness);
+router.post('/updateBusiness', updateBusiness);
 export default router;

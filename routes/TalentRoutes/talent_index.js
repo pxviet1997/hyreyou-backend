@@ -1,12 +1,12 @@
 import express from 'express';
 
-import {getTalent, createTalent,updateTalent} from './talent_controller.js';
+import { getTalent, createTalent, updateTalent } from './talent_controller.js';
 
-const router =express.Router();
+const router = express.Router();
 
-router.get('/',getTalent);
-router.post('/',createTalent);
-router.post('/update',updateTalent);
+router.get('/', getTalent);
+router.post('/', createTalent);
+router.post('/update', updateTalent);
 
 
 export default router;

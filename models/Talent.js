@@ -3,55 +3,55 @@ import bcrypt from 'bcrypt';
 
 
 const talentSchema = mongoose.Schema({
-    userType:String,
-    title:String,
-    firstName:String,
-    lastName:String,
-    email:{
-        type:String,
-        unique:true,
-        required:true,
-    },
-    password:{
-        type:String,
-        required:true,
-    },
-    dateOfBirth:Date,
-    profilePhoto:String,
-    mobileNumber:{
-        type:Number,
-        required:true,
-    },
-    address:{
-        streetName : String,         
-        city: String,
-        state:String,
-        country: String,
-        postalCode : Number,
-    },
-    jobHistory:[{
-        companyName:String,
-        jobPosition :String,
-        jobDescription:String,
-        yearOfExperience:String
-    }],
-    skills:[String],
-    education:[{
-        nameOfUniversity:String,
-        nameOfDegree:String,
-        degreeDuration:String
-    }],
-    culturalPreferences:[String],
-    availability:[String],
-    gender:String,
-    nationality:String,
-    createdAt: {
-        type:Date,
-        default:new Date()
-    },
+  userType: String,
+  title: String,
+  firstName: String,
+  lastName: String,
+  email: {
+    type: String,
+    unique: true,
+    required: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+  dateOfBirth: Date,
+  profilePhoto: String,
+  mobileNumber: {
+    type: Number,
+    required: true,
+  },
+  address: {
+    streetName: String,
+    city: String,
+    state: String,
+    country: String,
+    postalCode: Number,
+  },
+  jobHistory: [{
+    companyName: String,
+    jobPosition: String,
+    jobDescription: String,
+    yearOfExperience: String
+  }],
+  skills: [String],
+  education: [{
+    nameOfUniversity: String,
+    nameOfDegree: String,
+    degreeDuration: String
+  }],
+  culturalPreferences: [String],
+  availability: [String],
+  gender: String,
+  nationality: String,
+  createdAt: {
+    type: Date,
+    default: new Date()
+  },
 });
 
-const Talent = mongoose.model('Talent',talentSchema);
+const Talent = mongoose.model('Talent', talentSchema);
 
 export default Talent;
 
@@ -91,5 +91,5 @@ export default Talent;
 //         "gender":"Male",
 //         "nationality":"Indian",
 //         "createdAt": "2016-01-03T05:00:00.000Z",
-            
+
 //     }
