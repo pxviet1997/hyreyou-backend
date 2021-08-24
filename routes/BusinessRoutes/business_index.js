@@ -4,7 +4,7 @@ import { createBusiness,getBusiness,updateBusiness } from "./business_controller
 
 const router =express.Router();
 
-router.post('/',createBusiness);
+router.post('/createBusiness',createBusiness);
 router.get('/',getBusiness);
-router.get('/',updateBusiness);
+router.post('/updateBusiness',updateBusiness);
 export default router;
