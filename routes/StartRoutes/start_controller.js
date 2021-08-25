@@ -65,11 +65,12 @@ export const loginAuthVerification = async (req, res) => {
 // send a verification email
 export const sendVerificationEmail = async (req, res) => {
   const rand = Math.floor((Math.random() * 100) + 54);
-
+  const host = 'https://localhost:3000';
+  const link = `${host}/verify?id=${rand}`;
   const mailOptions = {
-    to: 'pxviet1997@gmail.com',
+    to: req.query.to,
     subject: "Please confirm your Email account",
-    text: "Hello, Please Click on the link to verify your email"
+    html: `<p>Please Click on the link to verify your email</p> <a href=${link}>Verify</a>`,
   }
   console.log(mailOptions);
   try {
@@ -80,7 +81,6 @@ export const sendVerificationEmail = async (req, res) => {
     console.log(error);
     res.end("error");
   }
-
 }
 
 
