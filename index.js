@@ -21,10 +21,13 @@ mongoose.connect(CONNECTION_URL,
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    useFindAndModify: false
+    useFindAndModify: false,
+    useCreateIndex: true
   }
-).then(() => app.listen(PORT, () => console.log(`server running on port : ${PORT}`)))
-  .catch((error) => console.log(error.message));
+).then(() => {
+  console.log("MongoDB connected");
+  app.listen(PORT, () => console.log(`Server running on port : ${PORT}`))
+}).catch((error) => console.log(error.message));
 
 // mongoose.set('useFindAndModify', false);
 

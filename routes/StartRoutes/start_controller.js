@@ -3,7 +3,7 @@ import express from 'express';
 //import UserLogin from "../../models/UserLogin.js";
 import Business from "../../models/Business.js";
 import Talent from "../../models/Talent.js";
-
+import { smtpTransport } from '../../emailServer/index.js';
 //import router = express.Router();
 // signup route
 export const signupAuthVerification = async (req, res) => {
@@ -60,6 +60,27 @@ export const loginAuthVerification = async (req, res) => {
   } else {
     res.status(401).json({ error: "User does not exist" });
   }
+}
+
+// send a verification email
+export const sendVerificationEmail = async (req, res) => {
+  const rand = Math.floor((Math.random() * 100) + 54);
+
+  const mailOptions = {
+    to: 'pxviet1997@gmail.com',
+    subject: "Please confirm your Email account",
+    text: "Hello, Please Click on the link to verify your email"
+  }
+  console.log(mailOptions);
+  try {
+    const response = await smtpTransport.sendMail(mailOptions);
+    console.log("Message sent: " + response.messageId);
+    res.end("sent");
+  } catch (error) {
+    console.log(error);
+    res.end("error");
+  }
+
 }
 
 
