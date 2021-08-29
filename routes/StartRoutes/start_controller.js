@@ -39,7 +39,7 @@ export const signupAuthVerification = async (req, res) => {
     id = newBusiness._id;
   }
 
-  await sendVerificationEmail(id)
+  await sendVerificationEmail(email, id);
 
 
 }
@@ -71,17 +71,51 @@ export const loginAuthVerification = async (req, res) => {
 }
 
 export const resetPasword = async (req, res) => {
+  const { email } = req.body;
+  const userTalent = await Talent.findOne({ email });
+  const userBusiness = await Business.findOne({ email });
+  let id = '';
 
+  if (!userTalent && !userBusiness) {
+    return res.status(200).json({
+      message: 'User does not exist!'
+    });
+  }
+  if (userTalent) {
+    id = userTalent._id;
+  }
+  else {
+    id = userBusiness._id;
+  }
+
+  const host = 'http://localhost:3000';
+  const link = `${host}/auth/resetPassword?user=${id}`;
+  const mailOptions = {
+    // to: email,
+    to: 'vietphamtesting@gmail.com',
+    subject: "Reset Password",
+    html: `<p>Please Click on the link to reset your password</p>
+           <a href=${link}>Verify</a>
+    `,
+  }
+
+  try {
+    const response = await smtpTransport.sendMail(mailOptions);
+    console.log("Message sent: " + response.messageId);
+    // res.end("sent");
+  } catch (error) {
+    console.log(error);
+    // res.end("error");
+  }
 }
 
 // send a verification email
-export const sendVerificationEmail = async (id) => {
-  // const rand = Math.floor((Math.random() * 100) + 54);
-  const host = 'http://localhost:5000';
-  const link = `${host}/auth/verify?id=${id}`;
+export const sendVerificationEmail = async (sendTo, id) => {
+  const host = 'http://localhost:3000';
+  const link = `${host}/verify/${id}`;
   const mailOptions = {
-    // to: sendTo,
-    to: 'vietphamtesting@gmail.com',
+    to: sendTo,
+    // to: 'vietphamtesting@gmail.com',
     subject: "Please confirm your Email account",
     html: `<p>Please Click on the link to verify your email</p>
            <a href=${link}>Verify</a>
@@ -99,10 +133,8 @@ export const sendVerificationEmail = async (id) => {
 }
 
 export const verifyEmail = async (req, res) => {
-  // console.log(req.protocol + ":/" + req.get('host'));
-  // if ((req.protocol + "://" + req.get('host')) == ("http://" + host)) {
   console.log("Domain is matched. Information is from Authentic email");
-  const _id = req.query.id;
+  const { _id } = req.query;
   const userTalent = await Talent.findOne({ _id });
   const userBusiness = await Business.findOne({ _id });
 
@@ -116,7 +148,6 @@ export const verifyEmail = async (req, res) => {
   else await Business.findOneAndUpdate({ _id }, { verified: true });
 
   res.status(200).send('User verified!');
-
 
 }
 

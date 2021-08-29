@@ -9,6 +9,10 @@ const businessSchema = mongoose.Schema({
     unique: true,
     required: true,
   },
+  verified: {
+    type: Boolean,
+    default: false
+  },
   jobDescription: String,
   jobPositiion: String,
   jobLocation: String,

@@ -7,6 +7,10 @@ const talentSchema = mongoose.Schema({
   title: String,
   firstName: String,
   lastName: String,
+  verified: {
+    type: Boolean,
+    default: false
+  },
   email: {
     type: String,
     unique: true,
