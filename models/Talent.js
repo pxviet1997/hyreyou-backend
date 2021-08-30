@@ -11,6 +11,11 @@ const talentSchema = mongoose.Schema({
     type: Boolean,
     default: false
   },
+  profilePhoto: {
+    data: Buffer,
+    contentType: String,
+    fileName: String,
+  },
   email: {
     type: String,
     unique: true,

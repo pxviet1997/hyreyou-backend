@@ -26,7 +26,11 @@ const businessSchema = mongoose.Schema({
     type: String,
     required: true,
   },
-  logo: String,
+  logo: {
+    data: Buffer,
+    contentType: String,
+    fileName: String,
+  },
   contactNumber: {
     type: Number,
     unique: true,

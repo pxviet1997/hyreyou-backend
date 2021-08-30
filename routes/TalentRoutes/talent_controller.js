@@ -2,10 +2,11 @@ import Talent from "../../models/Talent.js";
 
 
 export const getTalent = async (req, res) => {
+  const { _id } = req.body;
+
   try {
 
-    const talent = await Talent.findById();
-    console.log(talent);
+    const talent = await Talent.findById(_id);
     res.status(200).json(talent);
   } catch (error) {
     res.status(404).json({ message: error.message })

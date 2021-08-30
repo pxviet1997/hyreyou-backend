@@ -1,11 +1,18 @@
 import bcrypt from 'bcrypt';
 import express from 'express';
+import jwt from 'jsonwebtoken';
+//import UserLogin from "../../models/UserLogin.js";
 import Business from "../../models/Business.js";
 import Talent from "../../models/Talent.js";
-import { smtpTransport } from '../../emailServer/index.js';
+import Login from "../../models/Login.js";
+const jwttoken = "HyreYouMongo@123456789^-abcdefghij";
 
+//const JWT_SECRET=process.env.jwttoken;
+const JWT_SECRET = jwttoken;
+
+// signup route
 export const signupAuthVerification = async (req, res) => {
-  let { firstName, lastName, email, password, userType, mobileNumber } = req.body;
+  const { firstName, lastName, email, password, userType, mobileNumber } = req.body;
 
   if (!(email && password)) {
     res.status(400).send({ error: "Data not formatted properly" });
@@ -42,49 +49,68 @@ export const signupAuthVerification = async (req, res) => {
   }
 
   await sendVerificationEmail(email, id);
+}
 
+const createTokenLogin = async (email, password, _id) => {
+  try {
+    const token = jwt.sign({ id: _id, email }, JWT_SECRET)
+    //console.log("token---"+token);
+    return { status: 'ok', data: token }
 
+  } catch (error) {
+    console.log(error);
+    return { status: 'error', error: 'timed out' }
+  }
 }
 
 // login route
 export const loginAuthVerification = async (req, res) => {
   const body = req.body;
-  // console.log(req.body);
-  const userTalent = await Talent.findOne({ email: body.email });
-  const userBusiness = await Business.findOne({ email: body.email });
-  let user = null;
 
-  // console.log(userTalent);
-  // console.log(userBusiness);
+  const user = await Talent.findOne({ email: body.email });
 
-  if (!userTalent && !userBusiness) {
-    // console.log(null);
-    res.status(401).json({ error: "User does not exist", login: false, });
-    return;
+  if (user) {
+    // check user password with hashed password stored in the database
+    const validPassword = await bcrypt.compare(body.password, user.password);
+
+    if (validPassword) {
+      const response = await createTokenLogin(user.email, body.password, user._id);
+      if (response.status === 'ok') {
+        // storing our JWT web token as a cookie in our browser
+        res.cookie('token', response.data, { maxAge: 1 * 60 * 60 * 1000, httpOnly: true });  // maxAge: 1 hours
+
+        res.status(200).json({ status: 'ok', data: response.data });
+      }
+    } else {
+      res.status(400).json({ error: "Invalid Password" });
+    }
+  } else {
+    res.status(401).json({ error: "User does not exist" });
   }
+}
 
-  if (!userTalent.verified || !userBusiness.verified) {
-    console.log('not verify');
-    res.status(401).json({ error: "User is not verified!", login: false, });
-    return;
+export const loginBusinessAuthVerification = async (req, res) => {
+  const body = req.body;
+  const user = await Business.findOne({ email: body.email });
+
+  if (user) {
+    // check user password with hashed password stored in the database
+    const validPassword = await bcrypt.compare(body.password, user.password);
+    if (validPassword) {
+      const response = await createTokenLogin(user.email, body.password, user._id);
+      if (response.status === 'ok') {
+        // storing our JWT web token as a cookie in our browser
+        res.cookie('token', response.data, { maxAge: 1 * 60 * 60 * 1000, httpOnly: true });  // maxAge: 1 hours
+
+        res.status(200).json({ status: 'ok', data: response.data });
+      }
+      //res.status(200).json({ message: "Valid password" });
+    } else {
+      res.status(400).json({ error: "Invalid Password" });
+    }
+  } else {
+    res.status(401).json({ error: "User does not exist" });
   }
-
-  console.log('hi');
-
-  userTalent ? user = userTalent : user = userBusiness;
-
-  const validPassword = await bcrypt.compare(body.password, user.password);
-  if (!validPassword) {
-    res.status(400).json({ message: "Invalid Password!", login: false, });
-    return;
-  }
-  res.status(200).json({
-    message: "Valid password",
-    login: true,
-    data: user
-  });
-  // check user password with hashed password stored in the database
-
 }
 
 export const resetPasword = async (req, res) => {
