@@ -8,13 +8,15 @@ export const signupAuthVerification = async (req, res) => {
   let { firstName, lastName, email, password, userType, mobileNumber } = req.body;
 
   if (!(email && password)) {
-    return res.status(400).send({ error: "Data not formatted properly" });
+    res.status(400).send({ error: "Data not formatted properly" });
+    return;
   }
   const checkUserExist = await Talent.findOne({ email }).countDocuments();
   console.log(checkUserExist);
 
   if (!checkUserExist === 0) {
-    return res.status(401).json({ error: "User already exist" });
+    res.status(401).json({ error: "User already exist" });
+    return;
   }
 
   const salt = await bcrypt.genSalt(10);
@@ -47,26 +49,41 @@ export const signupAuthVerification = async (req, res) => {
 // login route
 export const loginAuthVerification = async (req, res) => {
   const body = req.body;
-  console.log(req.body);
-  const user = await Talent.findOne({ email: body.email });
+  // console.log(req.body);
+  const userTalent = await Talent.findOne({ email: body.email });
+  const userBusiness = await Business.findOne({ email: body.email });
+  let user = null;
 
-  if (!user) {
-    return res.status(401).json({ error: "User does not exist" });
+  // console.log(userTalent);
+  // console.log(userBusiness);
+
+  if (!userTalent && !userBusiness) {
+    // console.log(null);
+    res.status(401).json({ error: "User does not exist", login: false, });
+    return;
   }
 
-  if (!user.verified) {
-    return res.status(401).json({ error: "User is not verified" });
+  if (!userTalent.verified || !userBusiness.verified) {
+    console.log('not verify');
+    res.status(401).json({ error: "User is not verified!", login: false, });
+    return;
   }
 
-  // check user password with hashed password stored in the database
+  console.log('hi');
+
+  userTalent ? user = userTalent : user = userBusiness;
+
   const validPassword = await bcrypt.compare(body.password, user.password);
   if (!validPassword) {
-    return res.status(400).json({ error: "Invalid Password" });
+    res.status(400).json({ message: "Invalid Password!", login: false, });
+    return;
   }
   res.status(200).json({
     message: "Valid password",
+    login: true,
     data: user
   });
+  // check user password with hashed password stored in the database
 
 }
 
@@ -77,9 +94,10 @@ export const resetPasword = async (req, res) => {
   let id = '';
 
   if (!userTalent && !userBusiness) {
-    return res.status(200).json({
+    res.status(200).json({
       message: 'User does not exist!'
     });
+    return;
   }
   if (userTalent) {
     id = userTalent._id;
@@ -139,7 +157,8 @@ export const verifyEmail = async (req, res) => {
   const userBusiness = await Business.findOne({ _id });
 
   if (!userTalent && !userBusiness) {
-    return res.status(400).json({ error: "Unable to verify user!" });
+    res.status(400).json({ error: "Unable to verify user!" });
+    return;
   }
 
   if (userTalent) {
