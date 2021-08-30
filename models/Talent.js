@@ -17,7 +17,11 @@ const talentSchema = mongoose.Schema({
         required:true,
     },
     dateOfBirth:Date,
-    profilePhoto:String,
+    profilePhoto:{
+        data: Buffer,
+        contentType: String,
+        fileName: String,
+    },
     mobileNumber:{
         type:Number,
         required:true,
