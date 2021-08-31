@@ -25,20 +25,20 @@ export const createBusiness = async (req, res) => {
     res.status(200).json(newBusiness);
   } catch (error) {
     res.status(409).json({ message: error.message });
-
   }
 }
-
 export const updateBusiness = async (req, res) => {
   try {
-    const { _id } = req.body;
+    const { _id } = req.query;
+    // console.log(_id);
     const body = req.body;
-    const business = await Business.findOneAndUpdate(_id, body, { new: true });
-
+    console.log(body);
+    // const business = await Business.findOne()
+    const business = await Business.findOneAndUpdate({ _id }, body, { new: true });
     console.log(business);
     res.status(200).json(business);
   } catch (error) {
-    res.status(404).json({ message: error.message })
+    res.status(409).json({ message: error.message })
 
   }
 

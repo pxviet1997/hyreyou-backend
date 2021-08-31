@@ -7,7 +7,7 @@ const businessSchema = mongoose.Schema({
   businessABN: {
     type: String,
     unique: true,
-    required: true,
+    // required: true,
   },
   verified: {
     type: Boolean,
@@ -31,8 +31,8 @@ const businessSchema = mongoose.Schema({
     contentType: String,
     fileName: String,
   },
-  contactNumber: {
-    type: Number,
+  mobileNumber: {
+    type: String,
     unique: true,
     required: true,
   },
@@ -45,6 +45,10 @@ const businessSchema = mongoose.Schema({
     postalCode: Number,
   },
   skillsSeeking: [String],
+  roles: [{
+    title: String,
+    talentIds: [String]
+  }],
   createdAt: {
     type: Date,
     default: new Date()

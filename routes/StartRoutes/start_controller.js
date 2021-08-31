@@ -10,6 +10,18 @@ const jwttoken = "HyreYouMongo@123456789^-abcdefghij";
 //const JWT_SECRET=process.env.jwttoken;
 const JWT_SECRET = jwttoken;
 
+//verify Token
+export const verifyToken = (token) => {
+  try {
+    const verify = jwt.verify(token, JWT_SECRET);
+    if (verify.type === 'user') { return true; }
+    else { return false };
+  } catch (error) {
+    console.log(JSON.stringify(error), "error");
+    return false;
+  }
+}
+
 // signup route
 export const signupAuthVerification = async (req, res) => {
   const { firstName, lastName, email, password, userType, mobileNumber } = req.body;
@@ -42,7 +54,7 @@ export const signupAuthVerification = async (req, res) => {
 
   }
   else {
-    const newBusiness = new Business({ firstName, lastName, email, password, mobileNumber });
+    const newBusiness = new Business({ email, password, mobileNumber });
     await newBusiness.save();
     res.status(201).send(newBusiness);
     id = newBusiness._id;

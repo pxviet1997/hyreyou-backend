@@ -32,9 +32,9 @@ export const updateTalent = async (req, res) => {
   try {
     const { _id } = req.query;
     const body = req.body;
-    console.log(_id);
-    console.log(req.body);
-    const talent = await Talent.findOneAndUpdate(_id, body, { new: true });
+    // console.log(_id);
+    // console.log( req.body);
+    const talent = await Talent.findOneAndUpdate({ _id }, body, { new: true });
 
     res.status(201).json(talent);
 
