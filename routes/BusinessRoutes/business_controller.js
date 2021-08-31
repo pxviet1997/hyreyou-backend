@@ -29,9 +29,6 @@ export const createBusiness = async (req, res) => {
   }
 }
 
-
-
-
 export const updateBusiness = async (req, res) => {
   try {
     const { _id } = req.body;

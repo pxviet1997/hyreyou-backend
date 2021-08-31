@@ -51,6 +51,10 @@ const businessSchema = mongoose.Schema({
   },
 });
 
+businessSchema.index({
+  email: 'text'
+});
+
 const Business = mongoose.model('Business', businessSchema);
 
 export default Business;

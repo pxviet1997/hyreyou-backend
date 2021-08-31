@@ -115,8 +115,8 @@ export const loginBusinessAuthVerification = async (req, res) => {
 
 export const resetPasword = async (req, res) => {
   const { email } = req.body;
-  const userTalent = await Talent.findOne({ email });
-  const userBusiness = await Business.findOne({ email });
+  const userTalent = await Talent.aggregate([{ $match: { email } }]);
+  const userBusiness = await Business.aggregate([{ $match: { email } }]);
   let id = '';
 
   if (!userTalent && !userBusiness) {

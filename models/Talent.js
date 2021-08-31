@@ -28,7 +28,7 @@ const talentSchema = mongoose.Schema({
   dateOfBirth: Date,
   profilePhoto: String,
   mobileNumber: {
-    type: Number,
+    type: String,
     required: true,
   },
   address: {
@@ -58,6 +58,10 @@ const talentSchema = mongoose.Schema({
     type: Date,
     default: new Date()
   },
+});
+
+talentSchema.index({
+  email: 'text'
 });
 
 const Talent = mongoose.model('Talent', talentSchema);
