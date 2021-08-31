@@ -53,3 +53,12 @@ const verifyUserLogin = async (email,password)=>{
     }
   }
   
+
+
+
+  const {token}=req.cookies;
+    if(verifyToken(token)){
+        return res.render('home');
+    }else{
+        res.redirect('/login')
+    }
