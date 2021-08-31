@@ -7,4 +7,5 @@ const router = express.Router();
 router.get('/', getBusiness);
 router.post('/createBusiness', createBusiness);
 router.post('/updateBusiness', updateBusiness);
+
 export default router;

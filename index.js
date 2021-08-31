@@ -1,5 +1,4 @@
 import { } from 'dotenv/config';
-//require('dotenv/config');
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
@@ -7,10 +6,9 @@ import cors from 'cors';
 // import multer from 'multer';
 import cookieParser from 'cookie-parser';
 
-import userRoutes from './routes/StartRoutes/start_index.js';
+import userRoutes from './routes/StartRoutes/start.index.js';
 import talentRoutes from './routes/TalentRoutes/talent_index.js';
 import businessRoutes from './routes/BusinessRoutes/business_index.js';
-
 import uploadRoutes from './routes/upload/upload_index.js';
 
 import { CONNECTION_URL, PORT } from './constants/index.js';
@@ -27,7 +25,6 @@ app.set("view engine", "ejs");
 app.use("/auth", userRoutes);
 app.use('/talent', talentRoutes);
 app.use('/business', businessRoutes);
-//app.use('/updateImage',multer(uploadRoutes));
 app.use('/updateImage', uploadRoutes);
 
 mongoose.connect(CONNECTION_URL,
