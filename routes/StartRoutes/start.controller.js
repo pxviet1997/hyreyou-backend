@@ -35,7 +35,7 @@ const createTokenLogin = async (email, password, id) => {
 
 // signup route
 export const signupAuthVerification = async (req, res) => {
-  const { firstName, lastName, email, password, userType, mobileNumber } = req.body;
+  let { firstName, lastName, email, password, userType, mobileNumber } = req.body;
 
   if (!(email && password)) {
     res.status(400).send({ error: "Data not formatted properly" });
@@ -76,9 +76,9 @@ export const signupAuthVerification = async (req, res) => {
 
 
   const host = 'http://localhost:3000';
-  const link = `${host}/verify/${id}`;
+  const link = `${host}/verify?_id=${id}&userType=${userType}`;
   const mailOptions = {
-    to: sendTo,
+    to: email,
     // to: 'vietphamtesting@gmail.com',
     subject: "Please confirm your Email account",
     html: `<p>Please Click on the link to verify your email</p>
@@ -88,7 +88,7 @@ export const signupAuthVerification = async (req, res) => {
   try {
     const response = await smtpTransport.sendMail(mailOptions);
     console.log("Message sent: " + response.messageId);
-    res.status(201).json({ user });
+    res.status(201).json({ message: 'An email has been sent. Please check you email inbox for account verification instruction' });
   } catch (error) {
     console.log(error);
     res.status(401).json({ message: 'Unable to send verification email. Please check your email again!' });
@@ -160,20 +160,15 @@ export const resetPasword = async (req, res) => {
   const userTalent = await Talent.aggregate([{ $match: { email } }]);
   const userBusiness = await Business.aggregate([{ $match: { email } }]);
 
-  if (!userTalent && !userBusiness) {
-    res.status(200).json({
-      message: 'User does not exist!'
-    });
-    return;
-  }
+  if (!userTalent && !userBusiness) return res.status(401).json({ message: 'User does not exist!' });
 
   const id = userTalent ? userTalent._id : userBusiness._id;
+  const userType = userTalent ? 'talent' : 'business';
 
   const host = 'http://localhost:3000';
-  const link = `${host}/auth/resetPassword?user=${id}`;
+  const link = `${host}/forgot?id=${id}&usertype=${userType}`;
   const mailOptions = {
     to: email,
-    // to: 'vietphamtesting@gmail.com',
     subject: "Reset Password",
     html: `<p>Please Click on the link to reset your password</p>
            <a href=${link}>Verify</a>`,
@@ -182,32 +177,56 @@ export const resetPasword = async (req, res) => {
   try {
     const response = await smtpTransport.sendMail(mailOptions);
     console.log('Message sent: ' + response.messageId);
-    res.status(200).json({
-      status: 'sent',
-    });
+    res.status(200).json({ message: 'An email has been sent! Please check your email inbox for reset password instruction' });
   } catch (error) {
     console.log(error);
+    res.status(401).json({ message: 'Unable to email for resetting. Please check your email again!' })
     // res.end("error");
   }
 }
 
 export const verifyEmail = async (req, res) => {
   console.log("Domain is matched. Information is from Authentic email");
-  const { _id } = req.query;
-  const userTalent = await Talent.findOne({ _id });
-  const userBusiness = await Business.findOne({ _id });
+  const { _id, userType } = req.query;
 
-  if (!userTalent && !userBusiness) {
-    res.status(400).json({ error: "Unable to verify user!" });
-    return;
+  try {
+    const user = userType === 'Talent' ? await Talent.findOne({ _id }) : await Business.findOne({ _id });
+
+    if (!user) {
+      res.status(400).json({ error: "Unable to verify user!" });
+      return;
+    }
+
+    user.verified = true;
+    await user.save();
+
+    res.status(200).send('User verified!');
+  } catch (error) {
+    res.status(400).json({ message: 'There is an error with verification. Please try again' });
   }
 
-  userTalent
-    ? await Talent.findOneAndUpdate({ _id }, { verified: true })
-    : await Business.findOneAndUpdate({ _id }, { verified: true });
 
+}
 
-  res.status(200).send('User verified!');
+export const changePassword = async (req, res) => {
+  let { _id, password, userType } = req.body;
+  console.log(_id);
+
+  const user = userType === 'talent' ? await Talent.findById(_id) : await Business.findById(_id);
+
+  if (!user) return res.status(401).json({ message: 'Unable to change password' });
+
+  const validPassword = await bcrypt.compare(password, user.password)
+
+  if (validPassword) return res.status(201).json({ message: 'Same password' });
+
+  const salt = await bcrypt.genSalt(10);
+  password = await bcrypt.hash(password, salt);
+
+  user.password = password;
+  await user.save();
+
+  res.status(201).json({ message: 'Password updated!' });
 
 }
 
