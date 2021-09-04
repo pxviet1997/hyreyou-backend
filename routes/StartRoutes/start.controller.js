@@ -21,49 +21,35 @@ export const verifyToken = (token) => {
 export const signupAuthVerification = async (req, res) => {
   let { firstName, lastName, email, password, userType, mobileNumber } = req.body;
 
-  if (!(email && password)) {
-    res.status(400).send({ error: "Data not formatted properly" });
-    return;
-  }
-  const checkUserExist = await Talent.findOne({ email }).countDocuments();
-  console.log(checkUserExist);
+  const checkUserExist = userType === 'Talent'
+    ? await Talent.findOne({ email })
+    : await Business.findOne({ email });
 
-  if (!checkUserExist === 0) {
-    res.status(401).json({ error: "User already exist" });
-    return;
-  }
+  if (checkUserExist) return res.status(401).json({ message: "An user with this email has already existed! Please try again with different email" });
 
   const salt = await bcrypt.genSalt(10);
 
   // now we set user password to hashed password
   password = await bcrypt.hash(password, salt);
   // console.log(password);
-  let id = '', user = null;
+  let id = '';
   try {
-    if (userType === 'Talent') {
-      const newTalent = new Talent({ firstName, lastName, email, password, mobileNumber });
-      await newTalent.save();
-      user = newTalent;
-      id = newTalent._id;
+    const newUser = userType === 'Talent'
+      ? new Talent({ firstName, lastName, email, password, mobileNumber })
+      : new Business({ email, password, mobileNumber });
+    await newUser.save();
+    //   user = newTalent;
+    id = newUser._id;
 
-    }
-    else {
-      const newBusiness = new Business({ email, password, mobileNumber });
-      await newBusiness.save();
-      user = newBusiness;
-      id = newBusiness._id;
-    }
   } catch (error) {
     console.log(error);
     res.status(401).json({ message: 'Unable to sign up! Please try again!' });
   }
 
-
   const host = 'http://localhost:3000';
   const link = `${host}/verify?_id=${id}&userType=${userType}`;
   const mailOptions = {
     to: email,
-    // to: 'vietphamtesting@gmail.com',
     subject: "Please confirm your Email account",
     html: `<p>Please Click on the link to verify your email</p>
            <a href=${link}>Verify</a>`,
