@@ -17,22 +17,6 @@ export const verifyToken = (token) => {
   }
 }
 
-const createTokenLogin = async (email, password, id) => {
-  try {
-    const token = jwt.sign({ id, email }, JWT_SECRET)
-    return { status: 'ok', token }
-
-  } catch (error) {
-    console.log(error);
-    return { status: 'error', error: 'timed out' }
-  }
-}
-
-// send a verification email
-// export const sendVerificationEmail = async (sendTo, id) => {
-
-// }
-
 // signup route
 export const signupAuthVerification = async (req, res) => {
   let { firstName, lastName, email, password, userType, mobileNumber } = req.body;
@@ -96,49 +80,37 @@ export const signupAuthVerification = async (req, res) => {
 }
 
 // login route
-export const loginTalentAuthVerification = async (req, res) => {
-  const body = req.body;
+
+const createTokenLogin = async (email, password, id) => {
   try {
-    const user = await Talent.findOne({ email: body.email });
+    const token = jwt.sign({ id, email }, JWT_SECRET)
+    return { status: 'ok', token }
 
-    if (!user) return res.status(401).json({ error: "User does not exist! Please check your email" });
-    if (!user.verified) return res.status(401).json({ error: "User is not verified! Please check your email for verification" });
-
-    // check user password with hashed password stored in the database
-    const validPassword = await bcrypt.compare(body.password, user.password);
-    if (!validPassword) return res.status(400).json({ error: "Invalid Password! Please check your password" });
-
-    const response = await createTokenLogin(user.email, body.password, user._id);
-    if (response.status === 'ok') {
-      // storing our JWT web token as a cookie in our browser
-      res.cookie('token', response.token, { maxAge: 1 * 60 * 60 * 1000, httpOnly: true });  // maxAge: 1 hours
-
-      res.status(200).json({
-        status: 'ok',
-        token: response.token,
-        user
-      });
-    }
   } catch (error) {
-    return res.status(500).send({ message: error });
+    console.log(error);
+    return { status: 'error', error: 'timed out' }
   }
-
-
 }
 
-export const loginBusinessAuthVerification = async (req, res) => {
+export const loginAuthVerification = async (req, res) => {
   try {
-    const body = req.body;
-    const user = await Business.findOne({ email: body.email });
+    const { email, password, userType } = req.body;
+    // console.log(req.body);
+    const user = userType === 'Talent'
+      ? await Talent.findOne({ email })
+      : await Business.findOne({ email });
+    // console.log(!user);
 
-    if (!user) return res.status(401).json({ error: "User does not exist! Please check your email" });
-    if (!user.verified) return res.status(401).json({ error: "User is not verified! Please check your email for verification" });
-
+    if (!user) return res.status(401).json({ message: "User does not exist! Please check your email" });
+    if (!user.verified) return res.status(401).json({ message: "User is not verified! Please check your email for verification" });
+    // console.log(user);
     // check user password with hashed password stored in the database
-    const validPassword = await bcrypt.compare(body.password, user.password);
+    const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) return res.status(400).json({ error: "Invalid Password! Please check your password" });
 
-    const response = await createTokenLogin(user.email, body.password, user._id);
+    const response = await createTokenLogin(user.email, password, user._id);
+    console.log(response.status);
+
     if (response.status === 'ok') {
       // storing our JWT web token as a cookie in our browser
       res.cookie('token', response.token, { maxAge: 1 * 60 * 60 * 1000, httpOnly: true });  // maxAge: 1 hours
@@ -152,21 +124,22 @@ export const loginBusinessAuthVerification = async (req, res) => {
   } catch (error) {
     return res.status(500).send({ message: error });
   }
-
 }
 
 export const resetPasword = async (req, res) => {
-  const { email } = req.body;
-  const userTalent = await Talent.aggregate([{ $match: { email } }]);
-  const userBusiness = await Business.aggregate([{ $match: { email } }]);
+  const { email, userType } = req.body;
 
-  if (!userTalent && !userBusiness) return res.status(401).json({ message: 'User does not exist!' });
+  const user = userType === 'Talent'
+    ? await Talent.findOne({ email })
+    : await Business.findOne({ email });
 
-  const id = userTalent ? userTalent._id : userBusiness._id;
-  const userType = userTalent ? 'talent' : 'business';
+  if (!user) return res.status(401).json({ message: 'User does not exist!' });
+
+  const id = user._id;
+  // const userType = userTalent ? 'talent' : 'business';
 
   const host = 'http://localhost:3000';
-  const link = `${host}/forgot?id=${id}&usertype=${userType}`;
+  const link = `${host}/forgot?id=${id}&type=${userType}`;
   const mailOptions = {
     to: email,
     subject: "Reset Password",
@@ -205,14 +178,14 @@ export const verifyEmail = async (req, res) => {
     res.status(400).json({ message: 'There is an error with verification. Please try again' });
   }
 
-
 }
 
 export const changePassword = async (req, res) => {
   let { _id, password, userType } = req.body;
   console.log(_id);
 
-  const user = userType === 'talent' ? await Talent.findById(_id) : await Business.findById(_id);
+  const user = userType === 'Talent' ? await Talent.findById(_id) : await Business.findById(_id);
+  // console.log(user);
 
   if (!user) return res.status(401).json({ message: 'Unable to change password' });
 
@@ -226,7 +199,7 @@ export const changePassword = async (req, res) => {
   user.password = password;
   await user.save();
 
-  res.status(201).json({ message: 'Password updated!' });
+  res.status(201).json({ message: 'Your Password is updated!', changed: true });
 
 }
 
