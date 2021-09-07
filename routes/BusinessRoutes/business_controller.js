@@ -18,14 +18,23 @@ export const getBusiness = async (req, res) => {
 
 export const createBusiness = async (req, res) => {
     const body = req.body;
-    const emailId =req.body.email
-console.log(emailId);
+    const email = req.body.email;
+    const businessABN = req.body.businessABN;
+    const mobileNumber = req.body.mobileNumber;
 
     const newBusiness = new Business(body);
     try {
-       // await newBusiness.save();
-        res.status(200).json(newBusiness);
+
+        const checkUserExist = await Business.findOne({ $or: [{ email }, { businessABN }, { mobileNumber }] }).countDocuments();
+        if (!checkUserExist == 1) {
+            await newBusiness.save();
+            res.status(200).json(newBusiness);
+        } else {
+
+            res.status(401).json({ message: "Business already exist with this Details" });
+        }
     } catch (error) {
+
         res.status(409).json({ message: error.message });
 
     }
@@ -35,13 +44,11 @@ console.log(emailId);
 
 export const updateBusiness = async (req, res) => {
     try {
-        const { _id } = req.query;
-        // console.log(_id);
-        const body = req.body;
-        console.log(body);
-        // const business = await Business.findOne()
-        const business = await Business.findOneAndUpdate({ _id }, body, { new: true });
-        console.log(business);
+        const obj = req.body;
+        const _id = obj._id;
+        delete obj._id;
+        const obj1 = obj;
+        const business = await Business.findByIdAndUpdate(_id, obj1, { new: true });
         res.status(200).json(business);
     } catch (error) {
         res.status(409).json({ message: error.message })

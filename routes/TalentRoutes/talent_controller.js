@@ -19,9 +19,14 @@ export const createTalent = async (req, res) => {
 
     const newTalent = new Talent(body);
     try {
-        await newTalent.save();
-        res.status(201).json(newTalent);
+        const checkUserExist = await Talent.findOne({ $or: [{ email }, { mobileNumber }] }).countDocuments();
+        if (!checkUserExist == 1) {
+            await newTalent.save();
+            res.status(201).json(newTalent);
+        } else {
 
+            res.status(401).json({ message: "Talent already exist with this Details" });
+        }
     } catch (error) {
         res.status(409).json({ message: error.message });
     }

@@ -24,6 +24,7 @@ const talentSchema = mongoose.Schema({
     },
     mobileNumber:{
         type:Number,
+        unique:true,
         required:true,
     },
     address:{
