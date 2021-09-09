@@ -7,9 +7,9 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 
 import userRoutes from './routes/StartRoutes/start.index.js';
-import talentRoutes from './routes/TalentRoutes/talent_index.js';
-import businessRoutes from './routes/BusinessRoutes/business_index.js';
-import uploadRoutes from './routes/upload/upload_index.js';
+import talentRoutes from './routes/TalentRoutes/talent.index.js';
+import businessRoutes from './routes/BusinessRoutes/business.index.js';
+import uploadRoutes from './routes/upload/upload.index.js';
 
 import { CONNECTION_URL, PORT } from './constants/index.js';
 

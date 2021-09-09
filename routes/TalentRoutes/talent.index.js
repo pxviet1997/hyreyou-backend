@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { getTalent, createTalent, updateTalent } from './talent_controller.js';
+import { getTalent, createTalent, updateTalent } from './talent.controller.js';
 
 const router = express.Router();
 

@@ -26,9 +26,9 @@ const talentSchema = mongoose.Schema({
     required: true,
   },
   dateOfBirth: Date,
-  profilePhoto: String,
   mobileNumber: {
     type: String,
+    unique: true,
     required: true,
   },
   address: {

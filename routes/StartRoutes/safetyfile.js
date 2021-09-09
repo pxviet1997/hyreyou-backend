@@ -62,3 +62,12 @@ if (verifyToken(token)) {
 } else {
   res.redirect('/login')
 }
+
+
+     //const checkUserExist = await Business.findOne({ email }).countDocuments();
+        //  console.log("wfwfwfwfwff"+checkUserExist);
+        // if (!checkUserExist == 1){
+             //  }else{
+        //     console.log("inside else");
+        //     res.status(401).json({message: "Business already exist with this Email"});
+        // }
