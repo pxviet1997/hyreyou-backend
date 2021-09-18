@@ -1,48 +1,56 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
 
-const businessSchema =mongoose.Schema({
-    userType:String,
-    businessName:String,
-    businessABN:{
-        type:String,
-        unique:true,
-        required:true,
+const businessSchema = mongoose.Schema({
+    userType: String,
+    businessName: String,
+    businessABN: {
+        type: String,
+        unique: true,
+        // required: true,
     },
-    jobDescription:String,
-    jobPositiion:String,
-    jobLocation:String,
-    experienceRequired:String,
-    email:{
-        type:String,
-        unique:true,
-        required:true,
+    jobDescription: String,
+    jobPositiion: String,
+    jobLocation: String,
+    experienceRequired: String,
+    email: {
+        type: String,
+        unique: true,
+        required: true,
     },
-    password:{
-        type:String,
-        required:true,
+    password: {
+        type: String,
+        required: true,
     },
-    logo:String,
-    contactNumber:{
-        type:Number,
-        unique:true,
-        required:true,
+    logo: {
+        data: Buffer,
+        contentType: String,
+        fileName: String,
     },
-    culturalInformation:String,
-    address:{
-        streetName : String,         
+    mobileNumber: {
+        type: Number,
+        unique: true,
+        required: true,
+    },
+    culturalInformation: String,
+    address: {
+        streetName: String,
         city: String,
-        state:String,
+        state: String,
         country: String,
-        postalCode : Number,
+        postalCode: Number,
     },
-    skillsSeeking:[String],
+    skillsSeeking: [String],
+    roles: [{
+        title: String,
+        talentIds: [String]
+    }],
     createdAt: {
-        type:Date,
-        default:new Date()
+        type: Date,
+        default: new Date()
     },
 });
 
-const Business = mongoose.model('Business',businessSchema);
+const Business = mongoose.model('Business', businessSchema);
 
 export default Business;
