@@ -3,60 +3,68 @@ import bcrypt from 'bcrypt';
 
 
 const talentSchema = mongoose.Schema({
-    userType:String,
-    title:String,
-    firstName:String,
-    lastName:String,
-    email:{
-        type:String,
-        unique:true,
-        required:true,
-    },
-    password:{
-        type:String,
-        required:true,
-    },
-    dateOfBirth:Date,
-    profilePhoto:{
-        data: Buffer,
-        contentType: String,
-        fileName: String,
-    },
-    mobileNumber:{
-        type:Number,
-        unique:true,
-        required:true,
-    },
-    address:{
-        streetName : String,         
-        city: String,
-        state:String,
-        country: String,
-        postalCode : Number,
-    },
-    jobHistory:[{
-        companyName:String,
-        jobPosition :String,
-        jobDescription:String,
-        yearOfExperience:String
-    }],
-    skills:[String],
-    education:[{
-        nameOfUniversity:String,
-        nameOfDegree:String,
-        degreeDuration:String
-    }],
-    culturalPreferences:[String],
-    availability:[String],
-    gender:String,
-    nationality:String,
-    createdAt: {
-        type:Date,
-        default:new Date()
-    },
+  userType: String,
+  title: String,
+  firstName: String,
+  lastName: String,
+  verified: {
+    type: Boolean,
+    default: false
+  },
+  profilePhoto: {
+    data: Buffer,
+    contentType: String,
+    fileName: String,
+  },
+  email: {
+    type: String,
+    unique: true,
+    required: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+  dateOfBirth: Date,
+  mobileNumber: {
+    type: String,
+    unique: true,
+    required: true,
+  },
+  address: {
+    streetName: String,
+    city: String,
+    state: String,
+    country: String,
+    postalCode: Number,
+  },
+  jobHistory: [{
+    companyName: String,
+    jobPosition: String,
+    jobDescription: String,
+    yearOfExperience: String
+  }],
+  skills: [String],
+  education: [{
+    nameOfUniversity: String,
+    nameOfDegree: String,
+    degreeDuration: String
+  }],
+  culturalPreferences: [String],
+  availability: [String],
+  gender: String,
+  nationality: String,
+  createdAt: {
+    type: Date,
+    default: new Date()
+  },
 });
 
-const Talent = mongoose.model('Talent',talentSchema);
+talentSchema.index({
+  email: 'text'
+});
+
+const Talent = mongoose.model('Talent', talentSchema);
 
 export default Talent;
 
@@ -96,5 +104,5 @@ export default Talent;
 //         "gender":"Male",
 //         "nationality":"Indian",
 //         "createdAt": "2016-01-03T05:00:00.000Z",
-            
+
 //     }
