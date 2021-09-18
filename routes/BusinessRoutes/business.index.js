@@ -1,7 +1,7 @@
 import express from 'express';
 
-import { createBusiness, getBusiness, updateBusiness } from "./business_controller.js";
-import { createRoles, AddRoleCandidate, listRoleCandidate } from "./role_controller.js";
+import { createBusiness, getBusiness, updateBusiness } from "./business.controller.js";
+import { createRoles, AddRoleCandidate, listRoleCandidate } from "./role.controller.js";
 
 const router = express.Router();
 
