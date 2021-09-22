@@ -1,8 +1,11 @@
+import { JWT_SECRET } from "../../constants/index.js";
+import jwt from 'jsonwebtoken';
 import Business from "../../models/Business.js";
 import Talent from "../../models/Talent.js";
 
 export const checkUser = async (req, res, next) => {
   const { email, password } = req.body;
+
   const userTalent = await Talent.findOne({ email });
   const userBusiness = await Business.findOne({ email });
 
@@ -17,8 +20,22 @@ export const checkUser = async (req, res, next) => {
   if (password) req.password = password;
 
   next();
+};
 
-  // console.log(user);
+export const verifyToken = async (req, res, next) => {
+  const { authentication } = req.headers;
+  const token = authentication.split(' ')[1];
 
-  // return { user, userType };
-}
+  if (!token) {
+    return res.status(403).send({ message: "No token provided!" });
+  }
+
+  jwt.verify(token, JWT_SECRET, (err, decoded) => {
+    if (err) {
+      console.log(err);
+      return res.status(401).send({ message: "Unauthorized!" });
+    }
+    res.token = token;
+    next();
+  });
+};

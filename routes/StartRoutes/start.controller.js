@@ -6,21 +6,21 @@ import { smtpTransport } from '../../emailServer/index.js';
 import { JWT_SECRET } from '../../constants/index.js';
 
 //verify Token
-export const verifyToken = (token) => {
-  try {
-    const verify = jwt.verify(token, JWT_SECRET);
-    if (verify.type === 'user') { return true; }
-    else { return false };
-  } catch (error) {
-    console.log(JSON.stringify(error), "error");
-    return false;
-  }
-}
+// export const verifyToken = (token) => {
+//   try {
+//     const verify = jwt.verify(token, JWT_SECRET);
+//     if (verify.type === 'user') { return true; }
+//     else { return false };
+//   } catch (error) {
+//     console.log(JSON.stringify(error), "error");
+//     return false;
+//   }
+// }
 
 // signup route
 export const signupAuthVerification = async (req, res) => {
   let { firstName, lastName, email, password, userType, mobileNumber } = req.body;
-  // console.log(req.body);
+
   const checkUserExist = userType === 'Talent'
     ? await Talent.findOne({ email })
     : await Business.findOne({ email });
@@ -31,12 +31,12 @@ export const signupAuthVerification = async (req, res) => {
 
   // now we set user password to hashed password
   password = await bcrypt.hash(password, salt);
-  // console.log(password);
+
   let id = '';
   try {
     const newUser = userType === 'Talent'
-      ? new Talent({ firstName, lastName, email, password, mobileNumber })
-      : new Business({ email, password, mobileNumber });
+      ? new Talent({ firstName, lastName, email, password, mobileNumber, userType })
+      : new Business({ email, password, mobileNumber, userType });
     await newUser.save();
     //   user = newTalent;
     id = newUser._id;
@@ -54,7 +54,7 @@ export const signupAuthVerification = async (req, res) => {
     html: `<p>Please Click on the link to verify your email</p>
            <a href=${link}>Verify</a>`,
   }
-  // console.log(mailOptions);
+
   try {
     const response = await smtpTransport.sendMail(mailOptions);
     console.log("Message sent: " + response.messageId);
@@ -64,19 +64,6 @@ export const signupAuthVerification = async (req, res) => {
     res.status(401).json({ message: 'Unable to send verification email. Please check your email again!' });
   }
 }
-
-// login route
-
-// const createTokenLogin = async (email, password, id) => {
-//   try {
-//     const token = jwt.sign({ id, email }, JWT_SECRET)
-//     return { status: 'ok', token }
-
-//   } catch (error) {
-//     console.log(error);
-//     return { status: 'error', error: 'timed out' }
-//   }
-// }
 
 export const loginAuthVerification = async (req, res) => {
   try {
@@ -90,27 +77,14 @@ export const loginAuthVerification = async (req, res) => {
     res.cookie('token', token, { maxAge: 1 * 60 * 60 * 1000, httpOnly: true });  // maxAge: 1 hours
 
     res.status(200).json({
-      status: 'ok',
       token,
       user: req.user,
-      userType: req.userType
+      // userType: req.userType
     });
   } catch (error) {
     console.log(error);
     return res.status(500).send({ message: error });
   }
-}
-
-const checkUser = async (email) => {
-  const userTalent = await Talent.findOne({ email });
-  const userBusiness = await Business.findOne({ email });
-
-  const user = userTalent ? userTalent : userBusiness;
-  const userType = userTalent ? 'Talent' : 'Business';
-
-  console.log(user);
-
-  return { user, userType };
 }
 
 export const resetPasword = async (req, res) => {

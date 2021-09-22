@@ -35,13 +35,20 @@ export const createTalent = async (req, res) => {
 
 export const updateTalent = async (req, res) => {
   try {
-    const { _id } = req.query;
-    const body = req.body;
-    // console.log(_id);
-    // console.log( req.body);
-    const talent = await Talent.findOneAndUpdate({ _id }, body, { new: true });
+    // const { _id } = req.query;
+    const { _id, info } = req.body;
+    console.log(_id);
+    console.log(info);
 
-    res.status(201).json(talent);
+    const talent = await Talent.findOneAndUpdate({ _id }, info, { new: true });
+
+    console.log(talent);
+
+    res.status(201).json({
+      // token: req.token,
+      // userType: 'Talent',
+      user: talent
+    });
 
   } catch (error) {
     res.status(409).json({ message: error.message });
