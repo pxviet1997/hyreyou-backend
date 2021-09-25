@@ -5,45 +5,53 @@ import Business from "../../models/Business.js";
 import fs from 'fs';
 
 export const uploadImage = async (req, res) => {
-  console.log("upload----------- data   ==" + req.body.Type);
+  // console.log("upload----------- data   ==" + req.body.Type);
 
   if (req.file === undefined) {
     return res.send("you must select a file.");
   }
-  const Type = req.body.Type;
-  const _id = req.body._id;
+  // const Type = req.body.Type;
+  // const _id = req.body._id;
+  const { type, _id } = req.body;
 
   const data = fs.readFileSync(`./Images/${req.file.filename}`);
   //console.log("upload----------- data   ==" + data);
-  //var encImg = data.toString('base64');
+  // var encImg = data.toString('base64');
   const contentType = req.file.mimetype;
   const fileName = req.file.filename;
-  //const img = Buffer.from(encImg, 'base64');
-  if (Type === "Talent") {
-    console.log("uploadTalent   ==" + req.body.Type);
+  // const img = Buffer.from(encImg, 'base64');
 
-    await Talent.findByIdAndUpdate({ _id }, { profilePhoto: { data, contentType, fileName } });
-    fs.unlinkSync(`./Images/${req.file.filename}`);
-    res.cookie('Profile', req.file.filename, { maxAge: 1 * 60 * 60 * 1000, httpOnly: true });
-    res.status(201).json(req.file);
-  } else {
-    console.log("uploadBusiness   ==" + req.body._id);
+  type === "Talent"
+    ? await Talent.findByIdAndUpdate({ _id }, { profilePhoto: { data, contentType, fileName } })
+    : await Business.findByIdAndUpdate({ _id }, { logo: { data, contentType, fileName } });
 
-    await Business.findByIdAndUpdate({ _id }, { logo: { data, contentType, fileName } },
-      function (err, docs) {
-        if (err) {
-          console.log(err)
-        }
-        else {
-          console.log("Updated User : ", docs);
-          fs.unlinkSync(`./Images/${req.file.filename}`);
-          res.cookie('Profile', req.file.filename, { maxAge: 1 * 60 * 60 * 1000, httpOnly: true });
-          res.status(201).json(req.file);
-        }
-      });
+  fs.unlinkSync(`./Images/${req.file.filename}`);
+  fs.rmdirSync('./Images');
 
+  res.status(201).json({ message: type === "Talent" ? 'Your Avatar is updated!' : 'Your Logo is updated!' });
+  // if (type === "Talent") {
+  //   console.log("uploadTalent   ==" + req.body.Type);
 
-  }
+  //   await Talent.findByIdAndUpdate({ _id }, { profilePhoto: { data, contentType, fileName } });
+  //   fs.unlinkSync(`./Images/${req.file.filename}`);
+  //   res.cookie('Profile', req.file.filename, { maxAge: 1 * 60 * 60 * 1000, httpOnly: true });
+  //   res.status(201).json(req.file);
+  // } else {
+  //   console.log("uploadBusiness   ==" + req.body._id);
+
+  //   await Business.findByIdAndUpdate({ _id }, { logo: { data, contentType, fileName } },
+  //     function (err, docs) {
+  //       if (err) {
+  //         console.log(err)
+  //       }
+  //       else {
+  //         console.log("Updated User : ", docs);
+  //         fs.unlinkSync(`./Images/${req.file.filename}`);
+  //         res.cookie('Profile', req.file.filename, { maxAge: 1 * 60 * 60 * 1000, httpOnly: true });
+  //         res.status(201).json(req.file);
+  //       }
+  //     });
+  // }
 
 
 

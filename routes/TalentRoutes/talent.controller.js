@@ -1,3 +1,4 @@
+import Business from "../../models/Business.js";
 import Talent from "../../models/Talent.js";
 
 
@@ -37,8 +38,8 @@ export const updateTalent = async (req, res) => {
   try {
     // const { _id } = req.query;
     const { _id, info } = req.body;
-    console.log(_id);
-    console.log(info);
+    // console.log(_id);
+    // console.log(info);
 
     const talent = await Talent.findOneAndUpdate({ _id }, info, { new: true });
 
@@ -47,12 +48,24 @@ export const updateTalent = async (req, res) => {
     res.status(201).json({
       // token: req.token,
       // userType: 'Talent',
-      user: talent
+      user: talent,
+      message: 'Personal Details are updated!'
     });
 
   } catch (error) {
-    res.status(409).json({ message: error.message });
+    res.status(409).json({ message: 'Unable to update the Personal Details!' });
   }
-
 }
+
+// export const addJobHistory = async (req, res) => {
+//   try {
+//     const { _id, job } = req.body;
+//     await Business.updt
+
+//   } catch (error) {
+//     console.lof(error);
+//   }
+// }
+
+
 
