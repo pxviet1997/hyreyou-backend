@@ -43,6 +43,8 @@ const businessSchema = mongoose.Schema({
     skillsSeeking: [String],
     roles: [{
         title: String,
+        description: String,
+        skillSet: String,
         talentIds: [String]
     }],
     createdAt: {
