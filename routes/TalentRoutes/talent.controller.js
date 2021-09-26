@@ -36,36 +36,39 @@ export const createTalent = async (req, res) => {
 
 export const updateTalent = async (req, res) => {
   try {
-    // const { _id } = req.query;
     const { _id, info } = req.body;
-    // console.log(_id);
-    // console.log(info);
 
     const talent = await Talent.findOneAndUpdate({ _id }, info, { new: true });
 
-    console.log(talent);
-
     res.status(201).json({
-      // token: req.token,
-      // userType: 'Talent',
       user: talent,
       message: 'Personal Details are updated!'
     });
 
   } catch (error) {
+    console.log(error);
     res.status(409).json({ message: 'Unable to update the Personal Details!' });
   }
 }
 
-// export const addJobHistory = async (req, res) => {
-//   try {
-//     const { _id, job } = req.body;
-//     await Business.updt
+export const addJobHistory = async (req, res) => {
+  try {
+    console.log(req.body);
+    const { _id, newJob } = req.body;
+    const user = await Talent.findOneAndUpdate(
+      { _id },
+      { $push: { jobHistory: newJob } },
+      { new: true }
+    );
+    res.status(200).json({
+      user,
+      message: 'Job History is added!'
+    });
 
-//   } catch (error) {
-//     console.lof(error);
-//   }
-// }
+  } catch (error) {
+    console.log(error);
+  }
+}
 
 
 
