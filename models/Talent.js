@@ -44,19 +44,26 @@ const talentSchema = mongoose.Schema({
     jobDescription: String,
     yearOfExperience: String
   }],
-  skills: [String],
   education: [{
     nameOfUniversity: String,
     nameOfDegree: String,
     degreeDuration: String
   }],
   culturalPreferences: [String],
+  expectedSalary: String,
+  expectedSalaryType: String,
   availability: [String],
+  skills: [String],
   gender: String,
   nationality: String,
   createdAt: {
     type: Date,
     default: new Date()
+  },
+  certification: {
+    data: Buffer,
+    contentType: String,
+    fileName: String,
   },
 });
 

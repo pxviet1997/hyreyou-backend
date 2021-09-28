@@ -10,7 +10,7 @@ export const getTalent = async (req, res) => {
     const talent = await Talent.findById(_id);
     res.status(200).json(talent);
   } catch (error) {
-    res.status(404).json({ message: error.message })
+    res.status(404).json({ message: 'Unable to get Talent!' })
   }
 
 }
@@ -26,10 +26,10 @@ export const createTalent = async (req, res) => {
       res.status(201).json(newTalent);
     } else {
 
-      res.status(401).json({ message: "Talent already exist with this Details" });
+      res.status(401).json({ message: 'Talent already exist with this Details' });
     }
   } catch (error) {
-    res.status(409).json({ message: error.message });
+    res.status(409).json({ message: 'Unable to create Talent!' });
   }
 }
 
@@ -66,7 +66,25 @@ export const addJobHistory = async (req, res) => {
     });
 
   } catch (error) {
-    console.log(error);
+    res.status(409).json({ message: 'Unable to add Job!' });
+  }
+}
+
+export const addEducationHistory = async (req, res) => {
+  try {
+    const { _id, newEducation } = req.body;
+    const user = await Talent.findOneAndUpdate(
+      { _id },
+      { $push: { education: newEducation } },
+      { new: true }
+    );
+    res.status(200).json({
+      user,
+      message: 'Education is added!'
+    });
+
+  } catch (error) {
+    res.status(409).json({ message: 'Unable to add education!' });
   }
 }
 
