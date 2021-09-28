@@ -97,18 +97,20 @@ export const listRoleCandidate = async (req, res) => {
 
 export const listAllRoleAndNoCandidate = async (req, res) => {
     try {
-        const { _id } = req.body;
-        console.log("roleId----" + typeof (_id));
+        const _id  = req.body;
+        console.log(_id);
         // const ObjectId = mongoose.Types.ObjectId;
 
         // const business = await Business.findOne({ roles: roleId });
-        const business = await Business.findOne({ _id });
+        const business = await Business.findOne(_id);
         // const business = await Business.aggregate([
         //     {
         //         $match: { _id: mongoose.Types.ObjectId(_id) }
         //     }
         // ]);
+        console.log(business);
         let returnedRoles = [];
+        console.log('-------------------');
         const roles = business.roles;
         console.log(roles);
         // for (let i = 0; i < roles.length; i++) {
@@ -119,10 +121,10 @@ export const listAllRoleAndNoCandidate = async (req, res) => {
         roles.map((role) => {
 
             const talents = role.talentIds;
-            console.log(talents);
+            //console.log(talents);
             const numberOfTalents = talents.length;
 
-            returnedRoles.unshift({ roleTitle: role.title, numberOfTalents });
+            returnedRoles.unshift({ roleTitle: role.title, numberOfTalents, id: role._id });
 
         })
         console.log("business----" + returnedRoles);

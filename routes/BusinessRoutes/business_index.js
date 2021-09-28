@@ -9,7 +9,7 @@ router.get('/', getBusiness);
 router.post('/createBusiness', createBusiness);
 router.post('/updateBusiness', updateBusiness);
 router.post('/createRole', createRoles);
-router.get('/listRoleCandidate', listRoleCandidate);
+router.post('/listRoleCandidate', listRoleCandidate);
 router.post('/addRoleCandidate', AddRoleCandidate);
 router.post('/listAllRoleAndNoCandidate', listAllRoleAndNoCandidate);
 export default router;
