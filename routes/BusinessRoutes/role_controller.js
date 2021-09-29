@@ -78,7 +78,7 @@ export const listRoleCandidate = async (req, res) => {
 
         const roleTalents = await Talent.aggregate([
             { $match: { _id: { $in: talents } } },
-            { $project: { firstName: 1, lastName: 1 } }
+            { $project: { firstName: 1, lastName: 1, email: 1 } }
 
         ]);
         // console.log(roleTalents);
