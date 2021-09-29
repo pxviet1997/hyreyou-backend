@@ -4,17 +4,34 @@ import mongoose from 'mongoose';
 
 export const createRoles = async (req, res) => {
   try {
-    const obj = req.body;
-    const _id = obj._id;
-    console.log(obj._id);
-    console.log(obj);
-    delete obj._id;
-    const obj1 = obj;
-    console.log(obj1);
-    const business = await Business.updateOne({ _id }, { $push: obj1 });
-    console.log(business);
-    res.status(200).json(business);
+    // const obj = req.body;
+    // const _id = obj._id;
+    // console.log(obj._id);
+    // console.log(obj);
+    // delete obj._id;
+    // const obj1 = obj;
+    // console.log(obj1);
+    const { _id, title, description, skillSet } = req.body;
+    const newRole = { title, description, skillSet };
+    await Business.updateOne(
+      { _id },
+      { $push: { roles: newRole } },
+      (err, business) => {
+        console.log(business);
+        res.status(200).json(business);
+      }
+    );
+    // const business = await Business.findOne({ _id });
+    // let roles = business.roles;
+    // console.log('roles:', roles);
+    // roles.push(newRole);
+    // console.log('roles:', roles);
+    // business.roles = roles;
+    // await business.save();
+    // const business = await Business.updateOne({ _id }, { $push: obj1 });
+    // console.log(business);
   } catch (error) {
+    console.log(error);
     res.status(409).json({ message: error.message })
 
   }
@@ -56,10 +73,7 @@ export const listRoleCandidate = async (req, res) => {
     let talents = role[0].talentIds;
     console.log("role--" + role);
     console.log(talents);
-    // console.log("fgggggggs----" + business);
-    // res.status(200).json(role);
-    // const _id = '611744672319f01bd7c11769';
-    // let _id = mongoose.Types.ObjectId('611744672319f01bd7c11769');
+
     talents = talents.map((talent) => mongoose.Types.ObjectId(talent));
 
     const roleTalents = await Talent.aggregate([
@@ -81,3 +95,58 @@ export const listRoleCandidate = async (req, res) => {
 
 
 
+export const listAllRoleAndNoCandidate = async (req, res) => {
+  try {
+    const _id = req.body;
+    console.log(_id);
+    // const ObjectId = mongoose.Types.ObjectId;
+
+    // const business = await Business.findOne({ roles: roleId });
+    const business = await Business.findOne(_id);
+    // const business = await Business.aggregate([
+    //     {
+    //         $match: { _id: mongoose.Types.ObjectId(_id) }
+    //     }
+    // ]);
+    console.log(business);
+    let returnedRoles = [];
+    console.log('-------------------');
+    const roles = business.roles;
+    console.log(roles);
+    // for (let i = 0; i < roles.length; i++) {
+    //     const talents = roles[i].talents;
+    //     const numberOfTalents = talents.length;
+    //     returnedRoles.unshift({ roleTitle: roles[i].title, numberOfTalents });
+    // }
+    roles.map((role) => {
+
+      const talents = role.talentIds;
+      //console.log(talents);
+      const numberOfTalents = talents.length;
+
+      returnedRoles.unshift({ roleTitle: role.title, numberOfTalents, id: role._id });
+
+    })
+    console.log("business----" + returnedRoles);
+    // const role = business.roles.filter((role) => role._id == roleId);
+    // let talents = role[0].talentIds;
+    // console.log("role--" + role);
+    // console.log(talents);
+
+    // talents = talents.map((talent) => mongoose.Types.ObjectId(talent));
+
+    // const roleTalents = await Talent.aggregate([
+    //     { $match: { _id: { $in: talents } } },
+    //     { $project: { firstName: 1, lastName: 1 } }
+
+    // ]);
+    // console.log(roleTalents);
+    res.status(200).json(returnedRoles);
+
+
+  } catch (error) {
+    res.status(409).json({ message: error.message })
+
+  }
+
+}
