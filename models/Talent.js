@@ -50,6 +50,7 @@ const talentSchema = mongoose.Schema({
     degreeDuration: String
   }],
   culturalPreferences: [String],
+  expectedWorkType: String,
   expectedSalary: String,
   expectedSalaryType: String,
   availability: [String],
