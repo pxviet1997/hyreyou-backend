@@ -3,10 +3,9 @@ import Talent from "../../models/Talent.js";
 
 
 export const getTalent = async (req, res) => {
-  const { _id } = req.body;
+  const { _id } = req.query;
 
   try {
-
     const talent = await Talent.findById(_id);
     res.status(200).json(talent);
   } catch (error) {
@@ -38,8 +37,11 @@ export const updateTalent = async (req, res) => {
   try {
     const { _id, info } = req.body;
 
-    const talent = await Talent.findOneAndUpdate({ _id }, info, { new: true });
+    console.log(_id);
+    // const talent = await Talent.findById(_id);
 
+    const talent = await Talent.findOneAndUpdate({ _id }, info, { new: true });
+    // console.log(talent);
     res.status(201).json({
       user: talent,
       message: 'Personal Details are updated!'

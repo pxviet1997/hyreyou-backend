@@ -5,7 +5,7 @@ import { getTalent, createTalent, updateTalent, addJobHistory, addEducationHisto
 
 const router = express.Router();
 
-router.get('/', getTalent);
+router.get('/get-talent', getTalent);
 router.post('/', createTalent);
 router.post('/update', verifyToken, updateTalent);
 router.post('/add-job-history', addJobHistory);
