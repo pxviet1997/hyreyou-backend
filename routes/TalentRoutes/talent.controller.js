@@ -3,7 +3,7 @@ import Talent from "../../models/Talent.js";
 
 
 export const getTalent = async (req, res) => {
-  const { _id } = req.body;
+  const { _id } = req.query;
 
   try {
 
