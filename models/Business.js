@@ -49,7 +49,7 @@ const businessSchema = mongoose.Schema({
     title: String,
     description: String,
     skillSet: String,
-    talentIds: [String]
+    talentIds: [String],
   }],
   createdAt: {
     type: Date,
