@@ -1,5 +1,3 @@
-import express from 'express';
-const router = express.Router();
 import Talent from "../../models/Talent.js";
 import Business from "../../models/Business.js";
 import fs from 'fs';
@@ -14,7 +12,7 @@ export const uploadImage = async (req, res) => {
   // const _id = req.body._id;
   const { type, _id } = req.body;
 
-  const data = fs.readFileSync(`./Images/${req.file.filename}`);
+  const data = fs.readFileSync(`./Files/${req.file.filename}`);
   //console.log("upload----------- data   ==" + data);
   // var encImg = data.toString('base64');
   const contentType = req.file.mimetype;
@@ -25,40 +23,9 @@ export const uploadImage = async (req, res) => {
     ? await Talent.findByIdAndUpdate({ _id }, { profilePhoto: { data, contentType, fileName } })
     : await Business.findByIdAndUpdate({ _id }, { logo: { data, contentType, fileName } });
 
-  fs.unlinkSync(`./Images/${req.file.filename}`);
-  fs.rmdirSync('./Images');
+  fs.unlinkSync(`./Files/${req.file.filename}`);
+  fs.rmdirSync('./Files');
 
   res.status(201).json({ message: type === "Talent" ? 'Your Avatar is updated!' : 'Your Logo is updated!' });
-  // if (type === "Talent") {
-  //   console.log("uploadTalent   ==" + req.body.Type);
 
-  //   await Talent.findByIdAndUpdate({ _id }, { profilePhoto: { data, contentType, fileName } });
-  //   fs.unlinkSync(`./Images/${req.file.filename}`);
-  //   res.cookie('Profile', req.file.filename, { maxAge: 1 * 60 * 60 * 1000, httpOnly: true });
-  //   res.status(201).json(req.file);
-  // } else {
-  //   console.log("uploadBusiness   ==" + req.body._id);
-
-  //   await Business.findByIdAndUpdate({ _id }, { logo: { data, contentType, fileName } },
-  //     function (err, docs) {
-  //       if (err) {
-  //         console.log(err)
-  //       }
-  //       else {
-  //         console.log("Updated User : ", docs);
-  //         fs.unlinkSync(`./Images/${req.file.filename}`);
-  //         res.cookie('Profile', req.file.filename, { maxAge: 1 * 60 * 60 * 1000, httpOnly: true });
-  //         res.status(201).json(req.file);
-  //       }
-  //     });
-  // }
-
-
-
-  // const imgUrl = `http://localhost:5000/file/${req.file.filename}`;
-  // return res.send(imgUrl);
 }
-
-
-
-export default router;

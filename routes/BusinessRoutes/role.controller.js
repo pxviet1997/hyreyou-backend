@@ -150,3 +150,38 @@ export const listAllRoleAndNoCandidate = async (req, res) => {
   }
 
 }
+
+export const shortlistingCandidate = async (req, res) => {
+  try {
+    const { candidateId, roleId, _id } = req.body;
+    console.log("candidateId----" + candidateId);
+
+    // const business = await Business.findOne({ _id });
+    // console.log(business);
+    const business = await Business.findOneAndUpdate(
+      { _id },
+      // { roles: { $elemMatch: { _id: roleId } } },
+      {
+        $pull: {
+          "roles.$[e].talentIds": candidateId
+        }
+      },
+      {
+        arrayFilters: [{ "e._id": roleId }], new: true,
+      }
+    );
+    //   const business = await Business.findOne({ roles: { $elemMatch: { _id: roleId } } });
+    //   business.roles.filter((role) => role._id == roleId)[0].shortlistTalentId.push(candidateId);
+    //   const t =business.roles.filter((role) => role._id == roleId)[0].talentIds.indexOf(candidateId);
+    //   business.roles.filter((role) => role._id == roleId)[0].talentIds.splice(t,1);
+    //   //let tI = role[0].talentIds.filter(item => item !== candidateId);
+    //  await business.save();
+    res.status(200).json(business);
+
+
+  } catch (error) {
+    res.status(409).json({ message: error.message })
+
+  }
+
+}

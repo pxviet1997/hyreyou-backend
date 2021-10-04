@@ -18,6 +18,24 @@ import { JWT_SECRET } from '../../constants/index.js';
 // }
 
 // signup route
+export const getUser = async (req, res) => {
+  try {
+    const { userType } = req.query;
+    const user = userType === 'Talent'
+      ? await Talent.findById(req._id)
+      : await Business.findById(req._id);
+
+    res.status(200).json({
+      user,
+      message: 'Get User data successfully!'
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(401).json({ message: 'Unable to get user data!' });
+  }
+
+}
+
 export const signupAuthVerification = async (req, res) => {
   let { firstName, lastName, email, password, userType, mobileNumber } = req.body;
 
@@ -71,7 +89,7 @@ export const loginAuthVerification = async (req, res) => {
     const validPassword = await bcrypt.compare(req.password, req.user.password);
     if (!validPassword) return res.status(400).json({ message: "Invalid Password! Please check your password" });
 
-    const token = jwt.sign({ id: req.user._id, email: req.body.email }, JWT_SECRET);
+    const token = jwt.sign({ id: req.user._id }, JWT_SECRET);
 
     // storing our JWT web token as a cookie in our browser
     res.cookie('token', token, { maxAge: 1 * 60 * 60 * 1000, httpOnly: true });  // maxAge: 1 hours
@@ -79,7 +97,7 @@ export const loginAuthVerification = async (req, res) => {
     res.status(200).json({
       token,
       user: req.user,
-      // userType: req.userType
+      userType: req.userType
     });
   } catch (error) {
     console.log(error);

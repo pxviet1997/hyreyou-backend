@@ -1,4 +1,4 @@
-import Business from "../../models/Business.js";
+import fs from 'fs';
 import Talent from "../../models/Talent.js";
 
 
@@ -88,6 +88,40 @@ export const addEducationHistory = async (req, res) => {
   } catch (error) {
     res.status(409).json({ message: 'Unable to add education!' });
   }
+}
+
+export const updateCertification = async (req, res) => {
+  // console.log(req.body);
+  // console.log(req.files);
+  const { certificationName, _id } = req.body;
+
+  const data = fs.readFileSync(`./Files/${req.file.filename}`);
+  const contentType = req.file.mimetype;
+  const fileName = req.file.filename;
+
+  console.log(certificationName);
+
+  const talent = await Talent.findOneAndUpdate(
+    { _id },
+    {
+      $push: {
+        certifications: {
+          data,
+          contentType,
+          fileName,
+          name: certificationName
+        }
+      }
+    },
+    { new: true }
+  );
+
+  fs.unlinkSync(`./Files/${fileName}`);
+  fs.rmdirSync('./Files');
+
+  // console.log(talent);
+
+  res.status(200);
 }
 
 

@@ -16,6 +16,12 @@ const talentSchema = mongoose.Schema({
     contentType: String,
     fileName: String,
   },
+  certifications: [{
+    data: Buffer,
+    contentType: String,
+    fileName: String,
+    name: String
+  }],
   email: {
     type: String,
     unique: true,

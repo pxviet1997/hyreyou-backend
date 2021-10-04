@@ -39,3 +39,14 @@ export const verifyToken = async (req, res, next) => {
     next();
   });
 };
+
+export const getPayload = async (req, res, next) => {
+  const { token } = req.query;
+  // console.log(token);
+  const base64Payload = token.split('.')[1];
+  let payload = Buffer.from(base64Payload, 'base64');
+  payload = JSON.parse(payload.toString());
+
+  req._id = payload.id;
+  next();
+}
