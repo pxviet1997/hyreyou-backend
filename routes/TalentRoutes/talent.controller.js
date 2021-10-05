@@ -90,38 +90,66 @@ export const addEducationHistory = async (req, res) => {
   }
 }
 
-export const updateCertification = async (req, res) => {
-  // console.log(req.body);
-  // console.log(req.files);
-  const { certificationName, _id } = req.body;
+export const addCertification = async (req, res) => {
+  try {
+    const { certificationName, _id } = req.body;
 
-  const data = fs.readFileSync(`./Files/${req.file.filename}`);
-  const contentType = req.file.mimetype;
-  const fileName = req.file.filename;
+    const data = fs.readFileSync(`./Files/${req.file.filename}`);
+    const contentType = req.file.mimetype;
+    const fileName = req.file.filename;
 
-  console.log(certificationName);
-
-  const talent = await Talent.findOneAndUpdate(
-    { _id },
-    {
-      $push: {
-        certifications: {
-          data,
-          contentType,
-          fileName,
-          name: certificationName
+    const talent = await Talent.findOneAndUpdate(
+      { _id },
+      {
+        $push: {
+          certifications: {
+            data,
+            contentType,
+            fileName,
+            name: certificationName
+          }
         }
-      }
-    },
-    { new: true }
-  );
+      },
+      { new: true }
+    );
 
-  fs.unlinkSync(`./Files/${fileName}`);
-  fs.rmdirSync('./Files');
+    fs.unlinkSync(`./Files/${fileName}`);
+    fs.rmdirSync('./Files');
 
-  // console.log(talent);
+    res.status(200).json({
+      certification: {
+        data,
+        contentType,
+        fileName,
+        name: certificationName
+      },
+      message: 'Certification is added successfully!'
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(409).json({ message: 'Unable to add certification' });
+  }
+}
 
-  res.status(200);
+export const download = async (req, res) => {
+  const { _id, certificationId } = req.query;
+  console.log(certificationId);
+  try {
+    const talent = await Talent.findById(_id);
+
+    const certification = talent.certifications.filter((certification) => certification._id == certificationId)[0];
+
+    const fileName = certification.fileName.replace(/\s/g, "");
+    const writeStream = fs.createWriteStream(fileName);
+    writeStream.write(Buffer.from(certification.data), "base64");
+    writeStream.on("finish", () => {
+      res.download(fileName);
+      fs.unlinkSync(fileName);
+    });
+    writeStream.end();
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 

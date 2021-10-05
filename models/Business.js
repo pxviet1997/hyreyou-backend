@@ -13,10 +13,10 @@ const businessSchema = mongoose.Schema({
     type: Boolean,
     default: false
   },
-  jobDescription: String,
-  jobPositiion: String,
-  jobLocation: String,
-  experienceRequired: String,
+  // jobDescription: String,
+  // jobPositiion: String,
+  // jobLocation: String,
+  // experienceRequired: String,
   email: {
     type: String,
     unique: true,
