@@ -46,6 +46,7 @@ const businessSchema = mongoose.Schema({
     description: String,
     skillSet: String,
     talentIds: [String],
+    shortlistTalentId: [String]
   }],
   createdAt: {
     type: Date,
