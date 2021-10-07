@@ -7,16 +7,12 @@ const businessSchema = mongoose.Schema({
   businessABN: {
     type: String,
     unique: true,
-    // required: true,
   },
   verified: {
     type: Boolean,
     default: false
   },
-  // jobDescription: String,
-  // jobPositiion: String,
-  // jobLocation: String,
-  // experienceRequired: String,
+  description: String,
   email: {
     type: String,
     unique: true,

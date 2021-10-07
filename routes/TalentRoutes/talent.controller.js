@@ -44,7 +44,7 @@ export const updateTalent = async (req, res) => {
     // console.log(talent);
     res.status(201).json({
       user: talent,
-      message: 'Updates Succesaafully!'
+      message: 'Updates Successfully!'
     });
 
   } catch (error) {

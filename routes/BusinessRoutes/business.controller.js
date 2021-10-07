@@ -41,17 +41,14 @@ export const createBusiness = async (req, res) => {
 }
 export const updateBusiness = async (req, res) => {
   try {
-    const { _id } = req.query;
-    // console.log(_id);
-    const body = req.body;
-    console.log(body);
-    // const business = await Business.findOne()
-    const business = await Business.findOneAndUpdate({ _id }, body, { new: true });
-    console.log(business);
-    res.status(200).json(business);
+    const { _id, info } = req.body;
+    const business = await Business.findOneAndUpdate({ _id }, info, { new: true });
+    res.status(200).json({
+      user: business,
+      message: 'Updates Successfully!'
+    });
   } catch (error) {
-    res.status(409).json({ message: error.message })
-
+    console.log(error);
+    res.status(409).json({ message: 'Unable to update the Business Details!' });
   }
-
 }

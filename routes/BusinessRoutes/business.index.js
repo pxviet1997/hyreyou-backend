@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.get('/', getBusiness);
 router.post('/createBusiness', createBusiness);
-router.post('/updateBusiness', updateBusiness);
+router.post('/update', updateBusiness);
 router.post('/createRole', createRoles);
 router.post('/listRoleCandidate', listRoleCandidate);
 router.post('/addRoleCandidate', AddRoleCandidate);
