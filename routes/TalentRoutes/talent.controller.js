@@ -11,7 +11,6 @@ export const getTalent = async (req, res) => {
   } catch (error) {
     res.status(404).json({ message: 'Unable to get Talent!' })
   }
-
 }
 
 export const createTalent = async (req, res) => {
@@ -151,6 +150,3 @@ export const download = async (req, res) => {
     console.log(error);
   }
 }
-
-
-
