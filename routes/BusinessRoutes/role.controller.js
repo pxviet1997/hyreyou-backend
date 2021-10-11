@@ -9,12 +9,10 @@ export const createRoles = async (req, res) => {
     const newRole = { title, description, skillSet };
     await Business.updateOne(
       { _id },
-      { $push: { roles: newRole } },
-      (err, business) => {
-        console.log(business);
-        res.status(200).json(business);
-      }
+      { $push: { roles: newRole } }
     );
+
+    res.status(200).json({ message: 'New Role is created successfully!' });
 
   } catch (error) {
     console.log(error);
@@ -67,7 +65,7 @@ export const listRoleCandidate = async (req, res) => {
       { $project: { firstName: 1, lastName: 1, email: 1 } }
 
     ]);
-    // console.log(roleTalents);
+    console.log(roleTalents);
     res.status(200).json(roleTalents);
 
 
@@ -77,9 +75,6 @@ export const listRoleCandidate = async (req, res) => {
   }
 
 }
-
-
-
 
 export const listAllRoleAndNoCandidate = async (req, res) => {
   try {
