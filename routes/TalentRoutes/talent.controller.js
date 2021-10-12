@@ -54,7 +54,7 @@ export const updateTalent = async (req, res) => {
 
 export const addJobHistory = async (req, res) => {
   try {
-    console.log(req.body);
+    // console.log(req.body);
     const { _id, newJob } = req.body;
     const user = await Talent.findOneAndUpdate(
       { _id },
