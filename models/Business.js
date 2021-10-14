@@ -40,11 +40,11 @@ const businessSchema = mongoose.Schema({
     country: String,
     postalCode: Number,
   },
-  skillsSeeking: [String],
+  // skillsSeeking: [String],
   roles: [{
     title: String,
     description: String,
-    skillSet: String,
+    skillSet: [String],
     talentIds: [String],
     shortlistTalentId: [String]
   }],

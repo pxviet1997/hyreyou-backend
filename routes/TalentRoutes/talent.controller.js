@@ -73,7 +73,7 @@ export const addJobHistory = async (req, res) => {
 
 export const addEducationHistory = async (req, res) => {
   try {
-    const { _id, newEducation } = req.body;
+    const { _id, newEducation } = req.body
     const user = await Talent.findOneAndUpdate(
       { _id },
       { $push: { education: newEducation } },
@@ -129,6 +129,11 @@ export const addCertification = async (req, res) => {
     res.status(409).json({ message: 'Unable to add certification' });
   }
 }
+
+export const matchToRoles = async (req, res) => {
+  const { skillSet } = req;
+
+};
 
 export const download = async (req, res) => {
   const { _id, certificationId } = req.query;

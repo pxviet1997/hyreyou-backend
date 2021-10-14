@@ -3,7 +3,7 @@ import { verifyToken } from '../StartRoutes/start.middleware.js';
 import { upload } from '../upload/upload.middleware.js';
 
 import {
-  getTalent, createTalent, updateTalent, addJobHistory, addEducationHistory, addCertification, download
+  getTalent, createTalent, updateTalent, addJobHistory, addEducationHistory, addCertification, download, matchToRoles
 } from './talent.controller.js';
 
 const router = express.Router();
@@ -15,5 +15,6 @@ router.post('/add-job-history', addJobHistory);
 router.post('/add-education-history', addEducationHistory);
 router.post('/add-certification', upload.single('certification'), addCertification);
 router.get('/download', download);
+router.post('/match-to-roles', matchToRoles);
 
 export default router;

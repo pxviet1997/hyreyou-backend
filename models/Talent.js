@@ -72,10 +72,16 @@ const talentSchema = mongoose.Schema({
     contentType: String,
     fileName: String,
   },
+  matchesRoles: [{
+    title: String,
+    description: String,
+    skillSet: [String],
+    businessId: String
+  }]
 });
 
 talentSchema.index({
-  email: 'text'
+  expectedSkillSet: true
 });
 
 const Talent = mongoose.model('Talent', talentSchema);

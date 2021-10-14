@@ -4,21 +4,75 @@ import mongoose from 'mongoose';
 
 export const createRoles = async (req, res) => {
   try {
-
     const { _id, title, description, skillSet } = req.body;
-    const newRole = { title, description, skillSet };
-    await Business.updateOne(
-      { _id },
-      { $push: { roles: newRole } }
-    );
+    let newRole = { title, description, skillSet };
+    newRole = { ...newRole, talentIds: [] }
 
-    res.status(200).json({ message: 'New Role is created successfully!' });
+    const business = await match(newRole, _id);
+
+    res.status(200).json({
+      message: 'New Role is created successfully!',
+      user: business
+    });
 
   } catch (error) {
     console.log(error);
-    res.status(409).json({ message: error.message })
-
+    res.status(409).json({ message: error.message });
   }
+}
+
+const match = async (role, businessId) => {
+  const { skillSet, talentIds } = role;
+
+  let talents = await Talent.find(
+    {
+      $and: [
+        { expectedSkillSet: { $in: skillSet } },
+        { _id: { $nin: talentIds } }
+      ],
+    },
+    { _id: 1 }
+  );
+
+  let talIds = [];
+  talents.map(async (talent) => {
+    talIds.push(talent._id);
+  });
+
+  const newRole = { ...role, talentIds: talIds };
+
+  const business = await Business.findOneAndUpdate(
+    { _id: businessId },
+    { $push: { roles: newRole } },
+    { new: true }
+  );
+
+  talents.map(async (talent) => {
+    const t = await Talent.findOneAndUpdate(
+      { _id: talent._id },
+      { $push: { matchesRoles: { ...newRole, businessId } } },
+      { new: true }
+    );
+  });
+
+  return business;
+}
+
+export const matchToTalent = async (req, res) => {
+  const { _id } = req.body;
+  const business = await Business.findById(_id);
+
+  const { roles } = business;
+  roles.map(async (role) => {
+    await match(role, business._id);
+  });
+
+  res.status(200).json({
+    // message: 'New Role is created successfully!',
+    user: business
+  });
+  // await business.save();
+
 }
 
 export const AddRoleCandidate = async (req, res) => {
