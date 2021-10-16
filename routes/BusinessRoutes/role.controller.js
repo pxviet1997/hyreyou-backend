@@ -8,7 +8,13 @@ export const createRoles = async (req, res) => {
     let newRole = { title, description, skillSet };
     newRole = { ...newRole, talentIds: [] }
 
-    const business = await match(newRole, _id);
+    newRole = await match(newRole, _id);
+
+    const business = await Business.findOneAndUpdate(
+      { _id },
+      { $push: { roles: newRole } },
+      { new: true }
+    );
 
     res.status(200).json({
       message: 'New Role is created successfully!',
@@ -22,50 +28,53 @@ export const createRoles = async (req, res) => {
 }
 
 const match = async (role, businessId) => {
-  const { skillSet, talentIds } = role;
+  const { skillSet, talentIds, rejectedTalentIds, shortlistedTalentIds } = role;
 
   let talents = await Talent.find(
     {
       $and: [
         { expectedSkillSet: { $in: skillSet } },
-        { _id: { $nin: talentIds } }
+        { _id: { $nin: talentIds } },
+        { _id: { $nin: shortlistedTalentIds } },
+        { _id: { $nin: rejectedTalentIds } }
       ],
     },
     { _id: 1 }
   );
 
-  let talIds = [];
   talents.map(async (talent) => {
-    talIds.push(talent._id);
+    role.talentIds.push(talent._id);
   });
-
-  const newRole = { ...role, talentIds: talIds };
-
-  const business = await Business.findOneAndUpdate(
-    { _id: businessId },
-    { $push: { roles: newRole } },
-    { new: true }
-  );
 
   talents.map(async (talent) => {
     const t = await Talent.findOneAndUpdate(
       { _id: talent._id },
-      { $push: { matchesRoles: { ...newRole, businessId } } },
+      { $push: { matchesRoles: { ...role, businessId } } },
       { new: true }
     );
   });
 
-  return business;
+  return role;
 }
 
 export const matchToTalent = async (req, res) => {
   const { _id } = req.body;
-  const business = await Business.findById(_id);
-
+  let business = await Business.findById(_id);
+  const businessId = business._id;
   const { roles } = business;
-  roles.map(async (role) => {
-    await match(role, business._id);
-  });
+
+  let newRoles = [];
+
+  for (let i = 0; i < roles.length; i++) {
+    const newRole = await match(roles[i], businessId);
+    newRoles.push(newRole);
+  }
+
+  business = await Business.findOneAndUpdate(
+    { _id: businessId },
+    { roles: newRoles },
+    { new: true }
+  );
 
   res.status(200).json({
     // message: 'New Role is created successfully!',
@@ -104,13 +113,13 @@ export const AddRoleCandidate = async (req, res) => {
 export const listRoleCandidate = async (req, res) => {
   try {
     const { roleId } = req.body;
-    console.log("roleId----" + roleId);
+    // console.log("roleId----" + roleId);
     // const business = await Business.findOne({ roles: roleId });
     const business = await Business.findOne({ roles: { $elemMatch: { _id: roleId } } });
     const role = business.roles.filter((role) => role._id == roleId);
     let talents = role[0].talentIds;
-    console.log("role--" + talents);
-    console.log(talents);
+    // console.log("role--" + talents);
+    // console.log(talents);
 
     talents = talents.map((talent) => mongoose.Types.ObjectId(talent));
 
@@ -119,74 +128,8 @@ export const listRoleCandidate = async (req, res) => {
       { $project: { firstName: 1, lastName: 1, email: 1 } }
 
     ]);
-    console.log(roleTalents);
+    // console.log(roleTalents);
     res.status(200).json(roleTalents);
-
-
-  } catch (error) {
-    res.status(409).json({ message: error.message })
-
-  }
-
-}
-
-export const listAllRoleAndNoCandidate = async (req, res) => {
-  try {
-    const _id = req.body;
-    // const ObjectId = mongoose.Types.ObjectId;
-
-    // const business = await Business.findOne({ roles: roleId });
-    const business = await Business.findOne(_id);
-    // const business = await Business.aggregate([
-    //     {
-    //         $match: { _id: mongoose.Types.ObjectId(_id) }
-    //     }
-    // ]);
-    // console.log(business);
-    let returnedRoles = [];
-    const roles = business.roles;
-    // console.log(rol//es);
-
-    roles.map((role) => {
-
-      const talents = role.talentIds;
-      //console.log(talents);
-      const numberOfTalents = talents.length;
-
-      returnedRoles.unshift({ roleTitle: role.title, numberOfTalents, id: role._id });
-
-    })
-    // console.log("business----" + returnedRoles);
-    res.status(200).json(returnedRoles);
-
-
-  } catch (error) {
-    res.status(409).json({ message: error.message })
-
-  }
-
-}
-
-export const shortlistingCandidate = async (req, res) => {
-  try {
-    const { candidateId, roleId } = req.body;
-    console.log("candidateId----" + candidateId);
-
-    // const business = await Business.findOneAndUpdate(
-    //   {_id},
-
-    //   {$pull: { "roles.$[elem].talentIds": candidateId}},
-    //   {arrayFilter: [{"elem._id": roleId}], new: true}
-    //   // {new: true}
-    // );
-    const business = await Business.findOne({ roles: { $elemMatch: { _id: roleId } } });
-    console.log(business);
-    business.roles.filter((role) => role._id == roleId)[0].shortlistTalentId.push(candidateId);
-    const t = business.roles.filter((role) => role._id == roleId)[0].talentIds.indexOf(candidateId);
-    business.roles.filter((role) => role._id == roleId)[0].talentIds.splice(t, 1);
-    //let tI = role[0].talentIds.filter(item => item !== candidateId);
-    await business.save();
-    res.status(200).json(business);
 
 
   } catch (error) {
@@ -198,22 +141,17 @@ export const shortlistingCandidate = async (req, res) => {
 
 export const rejectCandidate = async (req, res) => {
   try {
-    const { candidateId, roleId } = req.body;
-    console.log("candidateId----" + candidateId);
+    const { talentId, roleId, _id } = req.body;
 
-    // const business = await Business.findOneAndUpdate(
-    //   {_id},
+    const business = await Business.findOneAndUpdate(
+      { _id },
+      {
+        $pull: { "roles.$[e].talentIds": talentId },
+        $push: { "roles.$[e].rejectedTalentIds": talentId }
+      },
+      { arrayFilters: [{ "e._id": roleId }], new: true }
+    );
 
-    //   {$pull: { "roles.$[elem].talentIds": candidateId}},
-    //   {arrayFilter: [{"elem._id": roleId}], new: true}
-    //   // {new: true}
-    // );
-    const business = await Business.findOne({ roles: { $elemMatch: { _id: roleId } } });
-    console.log(business);
-    const t = business.roles.filter((role) => role._id == roleId)[0].talentIds.indexOf(candidateId);
-    business.roles.filter((role) => role._id == roleId)[0].talentIds.splice(t, 1);
-    //let tI = role[0].talentIds.filter(item => item !== candidateId);
-    await business.save();
     res.status(200).json(business);
 
 
@@ -224,37 +162,24 @@ export const rejectCandidate = async (req, res) => {
 
 }
 
-// export const shortlistingCandidate = async (req, res) => {
-//   try {
-//     const { candidateId, roleId, _id } = req.body;
-//     console.log("candidateId----" + candidateId);
+export const shortlistTalent = async (req, res) => {
+  try {
+    const { talentId, roleId, _id } = req.body;
 
-//     // const business = await Business.findOne({ _id });
-//     // console.log(business);
-//     const business = await Business.findOneAndUpdate(
-//       { _id },
-//       // { roles: { $elemMatch: { _id: roleId } } },
-//       {
-//         $pull: {
-//           "roles.$[e].talentIds": candidateId
-//         }
-//       },
-//       {
-//         arrayFilters: [{ "e._id": roleId }], new: true,
-//       }
-//     );
-//     //   const business = await Business.findOne({ roles: { $elemMatch: { _id: roleId } } });
-//     //   business.roles.filter((role) => role._id == roleId)[0].shortlistTalentId.push(candidateId);
-//     //   const t =business.roles.filter((role) => role._id == roleId)[0].talentIds.indexOf(candidateId);
-//     //   business.roles.filter((role) => role._id == roleId)[0].talentIds.splice(t,1);
-//     //   //let tI = role[0].talentIds.filter(item => item !== candidateId);
-//     //  await business.save();
-//     res.status(200).json(business);
+    const business = await Business.findOneAndUpdate(
+      { _id },
+      {
+        $pull: { "roles.$[e].talentIds": talentId },
+        $push: { "roles.$[e].shortlistedTalentIds": talentId }
+      },
+      { arrayFilters: [{ "e._id": roleId }], new: true }
+    );
+
+    res.status(200).json(business);
 
 
-//   } catch (error) {
-//     res.status(409).json({ message: error.message })
+  } catch (error) {
+    res.status(409).json({ message: error.message })
+  }
 
-//   }
-
-// }
+}
