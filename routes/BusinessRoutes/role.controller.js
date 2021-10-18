@@ -2,7 +2,7 @@ import Business from "../../models/Business.js";
 import Talent from "../../models/Talent.js";
 import mongoose from 'mongoose';
 
-export const createRoles = async (req, res) => {
+export const createRole = async (req, res) => {
   try {
     const { _id, title, description, skillSet } = req.body;
     let newRole = { title, description, skillSet };
@@ -86,22 +86,13 @@ export const matchToTalent = async (req, res) => {
 
 export const AddRoleCandidate = async (req, res) => {
   try {
-    // const obj = req.body;
-    // const businessId = req.
-    // const _id = obj._id;
-    // console.log(obj._id);
     const { businessId, talentId, roleId } = req.body;
 
-
-    // const business = await Business.findByIdAndUpdate({ _id }, { 'roles': { $elemMatch: { _id } });
     const business = await Business.findOne({ _id: businessId });
     business.roles.filter((role) => role._id == roleId)[0]
       .talentIds.push(talentId);
     await business.save();
-    // console.log(role);
 
-
-    // console.log("fggggggg----" + business);
     res.status(200).json(business);
   } catch (error) {
     res.status(409).json({ message: error.message })
@@ -109,17 +100,13 @@ export const AddRoleCandidate = async (req, res) => {
   }
 }
 
-
-export const listRoleCandidate = async (req, res) => {
+export const getTalentList = async (req, res) => {
   try {
-    const { roleId } = req.body;
-    // console.log("roleId----" + roleId);
-    // const business = await Business.findOne({ roles: roleId });
+    const { roleId, type } = req.body;
+
     const business = await Business.findOne({ roles: { $elemMatch: { _id: roleId } } });
     const role = business.roles.filter((role) => role._id == roleId);
-    let talents = role[0].talentIds;
-    // console.log("role--" + talents);
-    // console.log(talents);
+    let talents = type === 'talentIds' ? role[0].talentIds : role[0].shortlistedTalentIds;
 
     talents = talents.map((talent) => mongoose.Types.ObjectId(talent));
 
@@ -139,7 +126,7 @@ export const listRoleCandidate = async (req, res) => {
 
 }
 
-export const rejectCandidate = async (req, res) => {
+export const rejectTalent = async (req, res) => {
   try {
     const { talentId, roleId, _id } = req.body;
 

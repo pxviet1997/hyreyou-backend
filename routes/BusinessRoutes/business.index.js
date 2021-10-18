@@ -1,18 +1,18 @@
 import express, { Router } from 'express';
 
 import { createBusiness, getBusiness, updateBusiness } from "./business.controller.js";
-import { createRoles, AddRoleCandidate, listRoleCandidate, shortlistTalent, rejectCandidate, matchToTalent } from "./role.controller.js";
+import { createRole, AddRoleCandidate, getTalentList, shortlistTalent, rejectTalent, matchToTalent } from "./role.controller.js";
 
 const router = express.Router();
 
 router.get('/', getBusiness);
-router.post('/createBusiness', createBusiness);
+// router.post('/create-business', createBusiness);
 router.post('/update', updateBusiness);
-router.post('/createRole', createRoles);
-router.post('/listRoleCandidate', listRoleCandidate);
-router.post('/addRoleCandidate', AddRoleCandidate);
+router.post('/create-role', createRole);
+router.post('/get-talent-list', getTalentList);
+// router.post('/addRoleCandidate', AddRoleCandidate);
 router.post('/shortlist-talent', shortlistTalent);
-router.post('/rejectCandidate', rejectCandidate);
+router.post('/reject-talent', rejectTalent);
 router.post('/match-talent', matchToTalent);
 
 export default router;
