@@ -1,6 +1,7 @@
 import Business from "../../models/Business.js";
 import Talent from "../../models/Talent.js";
 import mongoose from 'mongoose';
+import { smtpTransport } from "../../emailServer/index.js";
 
 export const createRole = async (req, res) => {
   try {
@@ -169,4 +170,23 @@ export const shortlistTalent = async (req, res) => {
     res.status(409).json({ message: error.message })
   }
 
+}
+
+export const sendOffer = async (req, res) => {
+  const { email, subject, message } = req;
+
+  const mailOptions = {
+    to: email,
+    subject,
+    html: `<p>${message}</p>`
+  }
+
+  try {
+    const response = await smtpTransport.sendMail(mailOptions);
+    console.log("Message sent: " + response.messageId);
+    res.status(201).json({ message: 'Offer is sent!' });
+  } catch (error) {
+    console.log(error);
+    res.status(401).json({ message: 'Unable to send offer!' });
+  }
 }
