@@ -40,7 +40,6 @@ const businessSchema = mongoose.Schema({
     country: String,
     postalCode: Number,
   },
-  // skillsSeeking: [String],
   roles: [{
     title: String,
     description: String,
