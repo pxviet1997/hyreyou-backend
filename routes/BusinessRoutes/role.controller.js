@@ -30,7 +30,7 @@ export const createRole = async (req, res) => {
 
 const match = async (role, businessId) => {
   const { skillSet, talentIds, rejectedTalentIds, shortlistedTalentIds } = role;
-
+  // console.log(role);
   let talents = await Talent.find(
     {
       $and: [
@@ -43,14 +43,19 @@ const match = async (role, businessId) => {
     { _id: 1 }
   );
 
+  // console.log(talents);
+
   talents.map(async (talent) => {
     role.talentIds.push(talent._id);
   });
 
+  const newMatchedRole = { title: role.title, businessId };
+  // console.log(newMatchRole);
+
   talents.map(async (talent) => {
     const t = await Talent.findOneAndUpdate(
       { _id: talent._id },
-      { $push: { matchesRoles: { ...role, businessId } } },
+      { $push: { matchedRoles: newMatchedRole } },
       { new: true }
     );
   });
@@ -61,18 +66,18 @@ const match = async (role, businessId) => {
 export const matchToTalent = async (req, res) => {
   const { _id } = req.body;
   let business = await Business.findById(_id);
-  const businessId = business._id;
+  // const businessId = business._id;
   const { roles } = business;
 
   let newRoles = [];
 
   for (let i = 0; i < roles.length; i++) {
-    const newRole = await match(roles[i], businessId);
+    const newRole = await match(roles[i], _id);
     newRoles.push(newRole);
   }
 
   business = await Business.findOneAndUpdate(
-    { _id: businessId },
+    { _id },
     { roles: newRoles },
     { new: true }
   );

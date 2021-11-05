@@ -71,7 +71,7 @@ const talentSchema = mongoose.Schema({
     contentType: String,
     fileName: String,
   },
-  matchesRoles: [{
+  matchedRoles: [{
     title: String,
     description: String,
     skillSet: [String],

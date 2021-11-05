@@ -5,18 +5,6 @@ import Talent from "../../models/Talent.js";
 import { smtpTransport } from '../../emailServer/index.js';
 import { JWT_SECRET } from '../../constants/index.js';
 
-//verify Token
-// export const verifyToken = (token) => {
-//   try {
-//     const verify = jwt.verify(token, JWT_SECRET);
-//     if (verify.type === 'user') { return true; }
-//     else { return false };
-//   } catch (error) {
-//     console.log(JSON.stringify(error), "error");
-//     return false;
-//   }
-// }
-
 // signup route
 export const getUser = async (req, res) => {
   try {
@@ -37,7 +25,9 @@ export const getUser = async (req, res) => {
 }
 
 export const signupAuthVerification = async (req, res) => {
-  let { firstName, lastName, email, password, userType, mobileNumber } = req.body;
+  console.log(req.body);
+  let { newUserInfo, userType } = req.body;
+  let { email, password } = newUserInfo;
 
   const checkUserExist = userType === 'Talent'
     ? await Talent.findOne({ email })
@@ -50,13 +40,14 @@ export const signupAuthVerification = async (req, res) => {
   // now we set user password to hashed password
   password = await bcrypt.hash(password, salt);
 
+  newUserInfo = { ...newUserInfo, password, userType };
+
   let id = '';
   try {
     const newUser = userType === 'Talent'
-      ? new Talent({ firstName, lastName, email, password, mobileNumber, userType })
-      : new Business({ email, password, mobileNumber, userType });
+      ? new Talent(newUserInfo)
+      : new Business(newUserInfo);
     await newUser.save();
-    //   user = newTalent;
     id = newUser._id;
 
   } catch (error) {

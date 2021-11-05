@@ -27,7 +27,7 @@ const businessSchema = mongoose.Schema({
     contentType: String,
     fileName: String,
   },
-  mobileNumber: {
+  contactNumber: {
     type: String,
     unique: true,
     required: true,
